@@ -105,28 +105,7 @@ Kho phim bản quyền
 
 <h2>Phim nổi bật</h2>
 
-<div class="movie-grid">
-
-<div class="movie">
-<img src="https://picsum.photos/300/400?1">
-<h3>Squid Game</h3>
-</div>
-
-<div class="movie">
-<img src="https://picsum.photos/300/400?2">
-<h3>Wednesday</h3>
-</div>
-
-<div class="movie">
-<img src="https://picsum.photos/300/400?3">
-<h3>Avengers Endgame</h3>
-</div>
-
-<div class="movie">
-<img src="https://picsum.photos/300/400?4">
-<h3>Mai</h3>
-</div>
-
+<div class="movie-grid" id="movie-list">
 </div>
 
 </section>
@@ -134,6 +113,44 @@ Kho phim bản quyền
 <footer>
 © 2026 PHIM MỚI
 </footer>
+<script>
 
+async function loadMovies(){
+
+const url = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1";
+
+const response = await fetch(url);
+
+const data = await response.json();
+
+const movies = data.items;
+
+const movieList = document.getElementById("movie-list");
+
+movies.forEach(movie => {
+
+const poster = movie.thumb_url;
+
+const name = movie.name;
+
+movieList.innerHTML += `
+
+<div class="movie">
+
+<img src="${poster}">
+
+<h3>${name}</h3>
+
+</div>
+
+`;
+
+});
+
+}
+
+loadMovies();
+
+</script>
 </body>
 </html>
