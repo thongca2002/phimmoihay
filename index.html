@@ -25,7 +25,6 @@
       color: white;
     }
 
-    /* Thanh thông báo nhắc nhở chặn quảng cáo cho người xem */
     .ad-notice {
       background: #311b92;
       color: #fff;
@@ -144,7 +143,6 @@
       height: 38px;
     }
 
-    /* Giao diện thanh số trang */
     .pagination {
       display: flex;
       justify-content: center;
@@ -227,7 +225,7 @@
 <header>
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm tên phim trực tuyến...">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim...">
     <button onclick="searchMovies()">Tìm Kiếm</button>
   </div>
 </header>
@@ -236,6 +234,7 @@
   <button class="tab-btn active" onclick="switchCategory('popular', this)">Phim Phổ Biến</button>
   <button class="tab-btn" onclick="switchCategory('now_playing', this)">Phim Đang Chiếu</button>
   <button class="tab-btn" onclick="switchCategory('top_rated', this)">Phim Điểm Cao</button>
+  <button class="tab-btn" style="background: #2e7d32; border-color: #2e7d32;" onclick="switchCategory('my_movies', this)">⭐ Bộ Phim Của Tôi</button>
 </div>
 
 <div id="mainSection">
@@ -247,14 +246,27 @@
 
 <script>
 // =========================================================================
-// 🔑 MÃ API KEY CHÍNH CHỦ CỦA BẠN (ĐÃ ĐỒNG BỘ BẢO MẬT HTTPS)
+// 🔑 THÔNG TIN API KEY HỆ THỐNG
 // =========================================================================
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
-const BACKUP_KEY = "e21a85e683db8ca343d349f5cf3f1d76"; // Tự kích hoạt mã phụ nếu mã chính gặp lỗi đồng bộ
-// =========================================================================
-
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_PATH = "https://image.tmdb.org/t/p/w500";
+
+// =========================================================================
+// 🎬 KHO PHIM DO BẠN TỰ UP (ĐÃ ĐỒNG BỘ CHÍNH XÁC LINK STREAMTAPE)
+// =========================================================================
+const MY_MOVIES_DATA = [
+  {
+    id: "my_1",
+    title: "Phú Nhân Đại Quân Thế Kỷ 21",
+    // Ảnh nền hiển thị (bạn có thể thay link ảnh khác nếu muốn)
+    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500", 
+    // Link nhúng đã được tự động xử lý chuẩn cấu trúc phát video của Streamtape
+    videoUrl: "https://streamtape.com/e/gP6r4y4qYPiqKoo/", 
+    overview: "Bộ phim tâm lý, tình cảm đặc sắc do bạn tải lên và quản lý trực tiếp trên hệ thống."
+  }
+];
+// =========================================================================
 
 let currentType = "popular";
 let currentPage = 1;
@@ -262,97 +274,114 @@ let totalPages = 1;
 let isSearching = false;
 let currentQuery = "";
 
-// Hàm gọi phim chính
 async function fetchMovies(page = 1) {
   currentPage = page;
-  let url = `${API_URL}/movie/${currentType}?api_key=${TMDB_KEY}&language=vi-VN&page=${currentPage}`;
   
+  if (currentType === "my_movies") {
+    displayMovies(MY_MOVIES_DATA, true);
+    document.getElementById("paginationContainer").innerHTML = "";
+    return;
+  }
+
+  let url = `${API_URL}/movie/${currentType}?api_key=${TMDB_KEY}&language=vi-VN&page=${currentPage}`;
   if (isSearching) {
     url = `${API_URL}/search/movie?api_key=${TMDB_KEY}&language=vi-VN&query=${encodeURIComponent(currentQuery)}&page=${currentPage}`;
   }
   
   try {
     let res = await fetch(url);
-    if (!res.ok) throw new Error();
     let data = await res.json();
     totalPages = Math.min(data.total_pages, 500); 
-    displayMovies(data.results);
+    displayMovies(data.results, false);
     setupPagination();
   } catch (err) {
-    backupFetch(currentPage);
+    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>Không thể kết nối máy chủ dữ liệu phim tự động.</p>";
   }
 }
 
-// Hàm chạy API dự phòng
-async function backupFetch(page) {
-  let url = `${API_URL}/movie/${currentType}?api_key=${BACKUP_KEY}&language=vi-VN&page=${page}`;
-  if (isSearching) {
-    url = `${API_URL}/search/movie?api_key=${BACKUP_KEY}&language=vi-VN&query=${encodeURIComponent(currentQuery)}&page=${page}`;
-  }
-  try {
-    let res = await fetch(url);
-    let data = await res.json();
-    totalPages = Math.min(data.total_pages, 500);
-    displayMovies(data.results);
-    setupPagination();
-  } catch(e) {
-    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>Hệ thống dữ liệu đang bận, vui lòng thử lại sau.</p>";
-  }
-}
-
-// In phim ra màn hình
-function displayMovies(movies) {
+function displayMovies(movies, isLocal) {
   let listDiv = document.getElementById("list");
   let html = "";
 
   if (!movies || movies.length === 0) {
     listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào phù hợp.</p>";
-    document.getElementById("paginationContainer").innerHTML = "";
     return;
   }
 
   movies.forEach(m => {
-    let posterUrl = m.poster_path ? (IMG_PATH + m.poster_path) : "https://via.placeholder.com/500x750?text=No+Image";
-    html += `
-      <div class="card" onclick="openMovie(${m.id})">
-        <img src="${posterUrl}" alt="${m.title}">
-        <p>${m.title}</p>
-      </div>
-    `;
+    if (isLocal) {
+      html += `
+        <div class="card" onclick="openLocalMovie('${m.id}')">
+          <img src="${m.poster}" alt="${m.title}">
+          <p>${m.title}</p>
+        </div>
+      `;
+    } else {
+      let posterUrl = m.poster_path ? (IMG_PATH + m.poster_path) : "https://via.placeholder.com/500x750?text=No+Image";
+      html += `
+        <div class="card" onclick="openApiMovie(${m.id})">
+          <img src="${posterUrl}" alt="${m.title}">
+          <p>${m.title}</p>
+        </div>
+      `;
+    }
   });
   listDiv.innerHTML = html;
-  window.scrollTo(0, 0); 
 }
 
-// Cấu hình thanh số trang thông minh
+function openApiMovie(id) {
+  fetch(`${API_URL}/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`)
+    .then(res => res.json())
+    .then(m => {
+      toggleDetailView(true);
+      let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
+      renderDetail(m.title, embedUrl, m.overview || "Đang cập nhật nội dung tóm tắt...");
+    });
+}
+
+function openLocalMovie(id) {
+  let m = MY_MOVIES_DATA.find(movie => movie.id === id);
+  if (!m) return;
+  toggleDetailView(true);
+  renderDetail(m.title, m.videoUrl, m.overview);
+}
+
+function renderDetail(title, videoUrl, overview) {
+  document.getElementById("modDetail").innerHTML = `
+    <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
+    <h2>${title}</h2>
+    <div class="video-container">
+      <iframe src="${videoUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
+    </div>
+    <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${overview}</p>
+  `;
+}
+
+function toggleDetailView(showDetail) {
+  if (showDetail) {
+    document.getElementById("mainSection").style.display = "none";
+    document.getElementById("tabContainer").style.display = "none"; 
+    document.getElementById("modDetail").style.display = "block";
+  } else {
+    document.getElementById("modDetail").style.display = "none";
+    document.getElementById("mainSection").style.display = "block";
+    document.getElementById("tabContainer").style.display = "flex";
+  }
+}
+
 function setupPagination() {
   let pagDiv = document.getElementById("paginationContainer");
-  if (totalPages <= 1) {
-    pagDiv.innerHTML = "";
-    return;
-  }
+  if (totalPages <= 1) { pagDiv.innerHTML = ""; return; }
 
   let html = "";
-  html += `<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Trang trước</button>`;
-
+  html += `<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Trước</button>`;
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(totalPages, currentPage + 2);
-
-  if (startPage > 1) {
-    html += `<button class="page-btn" onclick="changePage(1)">1</button>`;
-    if (startPage > 2) html += `<span style="color:#aaa; padding:5px;">...</span>`;
-  }
 
   for (let i = startPage; i <= endPage; i++) {
     html += `<button class="page-btn ${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
   }
-
-  if (endPage < totalPages) {
-    if (endPage < totalPages - 1) html += `<span style="color:#aaa; padding:5px;">...</span>`;
-    html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
-  }
-
-  html += `<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Trang sau</button>`;
+  html += `<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Sau</button>`;
   pagDiv.innerHTML = html;
 }
 
@@ -372,63 +401,29 @@ function switchCategory(type, element) {
 }
 
 function searchMovies() {
-  let query = document.getElementById("searchInput").value.trim();
+  let query = document.getElementById("searchInput").value.trim().toLowerCase();
   if (query === "") return;
   
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  currentQuery = query;
-  isSearching = true;
-  backToList();
-  fetchMovies(1);
-}
-
-// Xem phim tự động qua server vidsrc
-function openMovie(id) {
-  let activeKey = document.getElementById("list").innerHTML.includes("bận") ? BACKUP_KEY : TMDB_KEY;
-  
-  fetch(`${API_URL}/movie/${id}?api_key=${activeKey}&language=vi-VN`)
-    .then(res => res.json())
-    .then(m => {
-      document.getElementById("mainSection").style.display = "none";
-      document.getElementById("tabContainer").style.display = "none"; 
-      document.getElementById("modDetail").style.display = "block";
-
-      let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
-
-      document.getElementById("modDetail").innerHTML = `
-        <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
-        <h2>${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'N/A'})</h2>
-        
-        <div class="video-container">
-          <iframe src="${embedUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
-        </div>
-        <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Đang cập nhật nội dung tóm tắt tiếng Việt cho bộ phim này..."}</p>
-      `;
-    })
-    .catch(() => {
-      let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
-      document.getElementById("modDetail").innerHTML = `
-        <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
-        <div class="video-container">
-          <iframe src="${embedUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
-        </div>
-      `;
-    });
+  if (currentType === "my_movies") {
+    let filtered = MY_MOVIES_DATA.filter(m => m.title.toLowerCase().includes(query));
+    displayMovies(filtered, true);
+  } else {
+    currentQuery = query;
+    isSearching = true;
+    backToList();
+    fetchMovies(1);
+  }
 }
 
 function backToList() {
-  document.getElementById("modDetail").style.display = "none";
-  document.getElementById("mainSection").style.display = "block";
-  document.getElementById("tabContainer").style.display = "flex";
+  toggleDetailView(false);
   document.getElementById("modDetail").innerHTML = ""; 
 }
 
 function goHome() {
-  document.getElementById("searchInput").value = "";
   switchCategory('popular', document.querySelector('.tab-btn'));
 }
 
-// Tự khởi chạy hệ thống ở trang số 1
 fetchMovies(1);
 </script>
 
