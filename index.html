@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBJDZD2G5X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-NBJDZD2G5X');
+  </script>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -263,7 +272,7 @@
       max-width: 1000px;
       margin: 0 auto;
       position: relative;
-      z-index: 101; /* Đảm bảo luôn nằm trên lớp phủ tắt đèn */
+      z-index: 101; 
     }
 
     .video-container {
@@ -331,19 +340,16 @@
       transition: opacity 0.5s, visibility 0.5s;
     }
 
-    /* ==========================================================
-       🕶️ LỚP PHỦ VÀ STYLE CHO TÍNH NĂNG TẮT ĐÈN
-    ========================================================== */
+    /* 🕶️ LỚP PHỦ VÀ STYLE CHO TÍNH NĂNG TẮT ĐÈN */
     .dark-mode-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.95); /* Tối đen 95% */
+      background: rgba(0, 0, 0, 0.95); 
       z-index: 99;
       pointer-events: none;
     }
 
-    /* Khi bật chế độ tắt đèn, ẩn các thành phần không cần thiết */
     body.lights-off {
       background: #000000;
     }
@@ -356,10 +362,10 @@
     }
     body.lights-off .detail h2,
     body.lights-off .movie-overview {
-      opacity: 0.1; /* Làm mờ chữ đi để tập trung xem video */
+      opacity: 0.1; 
     }
     body.lights-off .video-container {
-      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1); /* Tạo viền sáng nhẹ quanh video */
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1); 
     }
   </style>
 </head>
@@ -505,7 +511,6 @@ function renderDetail(title, videoUrl, overview) {
   `;
 }
 
-// Hàm xử lý Bật/Tắt đèn
 function toggleLights() {
   isLightsOff = !isLightsOff;
   let body = document.body;
@@ -533,7 +538,6 @@ function toggleDetailView(showDetail) {
     document.getElementById("tabContainer").style.display = "none"; 
     document.getElementById("modDetail").style.display = "block";
   } else {
-    // Nếu đang tắt đèn mà bấm quay lại thì phải bật đèn lên trước
     if (isLightsOff) toggleLights();
     document.getElementById("modDetail").style.display = "none";
     document.getElementById("mainSection").style.display = "block";
