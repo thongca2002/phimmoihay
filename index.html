@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PHIM MỚI - Thế Giới Phim Trực Tuyến</title>
+  <title>PHIM MỚI - Kho Phim Tổng Hợp Toàn Diện</title>
   <style>
     :root {
-      --main-color: #e50914; /* Màu đỏ thương hiệu */
+      --main-color: #e50914; 
       --bg-color: #0c0c0c;
       --card-bg: #181818;
     }
@@ -18,7 +18,6 @@
       color: white;
     }
 
-    /* Thanh Header của trang web */
     header {
       background: #000;
       padding: 15px 20px;
@@ -63,7 +62,6 @@
       font-weight: bold;
     }
 
-    /* Thanh chọn danh mục Phim Mới */
     .tabs {
       display: flex;
       justify-content: center;
@@ -81,7 +79,7 @@
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      border-radius: 20px; /* Bo tròn các nút danh mục */
+      border-radius: 20px; 
       transition: all 0.3s;
     }
 
@@ -91,7 +89,6 @@
       border-color: var(--main-color);
     }
 
-    /* Lưới hiển thị danh sách phim */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -130,14 +127,15 @@
       height: 38px;
     }
 
-    /* Khu vực chuyển trang */
+    /* Thanh phân trang có thêm ô nhảy trang nhanh */
     .pagination {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       padding: 20px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     .page-btn {
@@ -147,13 +145,19 @@
       padding: 8px 16px;
       cursor: pointer;
       border-radius: 4px;
+      font-weight: bold;
     }
     .page-btn:disabled {
       opacity: 0.3;
       cursor: not-allowed;
     }
 
-    /* Trang chi tiết & Trình phát phim */
+    #pageNumber {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    /* Giao diện xem chi tiết phim */
     .detail {
       display: none;
       padding: 20px;
@@ -195,16 +199,16 @@
 <header>
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm tên phim mới...">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm phim cũ & mới...">
     <button onclick="searchMovies()">Tìm Kiếm</button>
   </div>
 </header>
 
 <div class="tabs" id="tabContainer">
-  <button class="tab-btn active" onclick="switchCategory('movie', 'now_playing', '', this)">Phim Chiếu Rạp Mới</button>
-  <button class="tab-btn" onclick="switchCategory('tv', 'on_the_air', '', this)">Phim Bộ Mới</button>
-  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '28', this)">Hành Động Mới</button>
-  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '878', this)">Viễn Tưởng Mới</button>
+  <button class="tab-btn active" onclick="switchCategory('movie', 'discover', '', this)">Tất Cả Phim Lẻ</button>
+  <button class="tab-btn" onclick="switchCategory('tv', 'discover', '', this)">Tất Cả Phim Bộ</button>
+  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '28', this)">Hành Động</button>
+  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '878', this)">Viễn Tưởng</button>
 </div>
 
 <div id="mainSection">
@@ -220,31 +224,29 @@
 <div id="detail" class="detail"></div>
 
 <script>
-// Giữ nguyên Khóa API Key v3 của bạn
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 const IMG = "https://image.tmdb.org/t/p/w500";
 
-let currentType = "movie";     // movie hoặc tv
-let currentCategory = "now_playing"; // now_playing, on_the_air, discover
-let currentGenre = "";         // Mã ID thể loại phim
+let currentType = "movie";     
+let currentCategory = "discover"; 
+let currentGenre = "";         
 let currentPage = 1;
 let isSearching = false;
 
-// ===== TẢI PHIM TỪ API =====
+// ===== TẢI DỮ LIỆU TOÀN BỘ KHO PHIM =====
 async function loadMovies(){
   try {
     let url = "";
     let query = document.getElementById("searchInput").value.trim();
 
     if (isSearching && query !== "") {
-      // API Tìm kiếm phim theo tên bạn nhập
-      url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=vi-VN&page=${currentPage}`;
-    } else if (currentCategory === "discover") {
-      // API Lọc theo thể loại phim mới (Hành động, viễn tưởng...)
-      url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${TMDB_KEY}&with_genres=${currentGenre}&language=vi-VN&sort_by=primary_release_date.desc&page=${currentPage}`;
+      // Khi tìm kiếm: hiển thị kết quả liên quan từ cũ đến mới theo trang
+      url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=vi-VN&page=${currentPage}`;
     } else {
-      // API Lấy danh sách phim chiếu rạp mới hoặc phim bộ mới phát sóng
-      url = `https://api.themoviedb.org/3/${currentType}/${currentCategory}?api_key=${TMDB_KEY}&language=vi-VN&page=${currentPage}`;
+      // Khi chọn danh mục: Dùng lệnh 'discover' kèm sắp xếp popularity.desc 
+      // Giúp liệt kê toàn bộ kho phim từ hot nhất kéo dài mãi về các phim cũ, phim kinh điển ở các trang sau
+      let genreParam = currentGenre !== "" ? `&with_genres=${currentGenre}` : "";
+      url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${TMDB_KEY}${genreParam}&language=vi-VN&sort_by=popularity.desc&page=${currentPage}`;
     }
 
     let res = await fetch(url);
@@ -252,20 +254,23 @@ async function loadMovies(){
     
     show(data.results, currentType === 'tv');
     
-    // Cập nhật trạng thái các nút phân trang
-    document.getElementById("pageNumber").innerText = `Trang ${currentPage}`;
+    // Quản lý hệ thống chuyển trang
+    document.getElementById("pageNumber").innerText = `Trang ${currentPage} / ${data.total_pages || 1}`;
     document.getElementById("prevBtn").disabled = currentPage === 1;
-    document.getElementById("nextBtn").disabled = !data.total_pages || currentPage >= data.total_pages;
+    
+    // TMDB giới hạn tối đa lấy dữ liệu tới trang số 500 cho lệnh discover/search công khai
+    let maxPages = Math.min(data.total_pages || 1, 500); 
+    document.getElementById("nextBtn").disabled = currentPage >= maxPages;
   } catch (error) {
-    console.error("Lỗi kết nối dữ liệu:", error);
+    console.error("Lỗi đồng bộ dữ liệu:", error);
   }
 }
 
-// ===== HIỂN THỊ DANH SÁCH RA GIAO DIỆN =====
+// ===== HIỂN THỊ DANH SÁCH PHIM =====
 function show(movies, isTVSeries){
   let html = "";
   if (!movies || movies.length === 0) {
-    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim mới nào.</p>";
+    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy phim.</p>";
     return;
   }
 
@@ -283,23 +288,21 @@ function show(movies, isTVSeries){
   document.getElementById("list").innerHTML = html;
 }
 
-// ===== CHỨC NĂNG TÌM KIẾM =====
+// ===== TÌM KIẾM =====
 function searchMovies() {
   let query = document.getElementById("searchInput").value.trim();
   if (query === "") return;
   isSearching = true;
   currentPage = 1;
   currentGenre = "";
-  currentCategory = "";
-  currentType = "movie";
+  currentCategory = "search";
   
-  // Bỏ chọn hiệu ứng các nút danh mục
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   backToList();
   loadMovies();
 }
 
-// ===== CHUYỂN ĐỔI GIỮA CÁC DANH MỤC =====
+// ===== ĐỔI DANH MỤC KHÁM PHÁ =====
 function switchCategory(type, category, genreId, buttonElement) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   buttonElement.classList.add('active');
@@ -314,14 +317,14 @@ function switchCategory(type, category, genreId, buttonElement) {
   loadMovies();
 }
 
-// ===== ĐIỀU HƯỚNG CHUYỂN TRANG =====
+// ===== ĐIỀU HƯỚNG CHUYỂN TRANG MƯỢT =====
 function changePage(direction) {
   currentPage += direction;
-  window.scrollTo({top: 0, behavior: 'smooth'}); // Cuộn mượt lên đầu trang
+  window.scrollTo({top: 0, behavior: 'smooth'}); 
   loadMovies();
 }
 
-// ===== TRANG XEM PHIM CHI TIẾT & NHÚNG VIDEO =====
+// ===== TRANG XEM VIDEO PHIM =====
 async function detail(id, isTVSeries){
   try {
     let type = isTVSeries ? 'tv' : 'movie';
@@ -333,27 +336,25 @@ async function detail(id, isTVSeries){
     document.getElementById("detail").style.display = "block";
 
     let title = isTVSeries ? m.name : m.title;
-    
-    // Đường dẫn lấy nguồn phát video từ bên thứ ba
     let embedUrl = isTVSeries 
       ? `https://vidsrc.me/embed/tv?id=${id}&season=1&episode=1` 
       : `https://vidsrc.me/embed/movie/${id}`;
 
     document.getElementById("detail").innerHTML = `
-      <button class="btn" onclick="backToList()">⬅ Quay lại</button>
+      <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
       <h2>${title}</h2>
       
       <div class="video-container">
         <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
       </div>
-      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Nội dung phim mới đang được cập nhật bản dịch tiếng Việt."}</p>
+      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Nội dung phim đang được cập nhật."}</p>
     `;
   } catch (error) {
-    console.error("Lỗi khi tải trình phát phim:", error);
+    console.error("Lỗi tải nguồn phát:", error);
   }
 }
 
-// ===== QUAY LẠI DANH SÁCH =====
+// ===== QUAY LẠI =====
 function backToList() {
   document.getElementById("detail").style.display = "none";
   document.getElementById("mainSection").style.display = "block";
@@ -361,13 +362,11 @@ function backToList() {
   document.getElementById("detail").innerHTML = ""; 
 }
 
-// ===== BẤM VÀO LOGO ĐỂ VỀ TRANG CHỦ =====
 function goHome() {
   document.getElementById("searchInput").value = "";
-  switchCategory('movie', 'now_playing', '', document.querySelector('.tab-btn'));
+  switchCategory('movie', 'discover', '', document.querySelector('.tab-btn'));
 }
 
-// Tự động chạy khi tải trang
 loadMovies();
 </script>
 
