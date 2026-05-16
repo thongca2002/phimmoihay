@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phim Mới</title>
+
+<style>
+body{
+margin:0;
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+}
+
+header{
+background:#111;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:30px;
+font-weight:bold;
+color:red;
+}
+
+nav a{
+color:white;
+margin:10px;
+text-decoration:none;
+}
+
+.banner{
+height:300px;
+background:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200') center/cover;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+font-weight:bold;
+}
+
+.movies{
+padding:20px;
+}
+
+.movie-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:20px;
+}
+
+.movie{
+background:#1b1b1b;
+border-radius:10px;
+overflow:hidden;
+transition:0.3s;
+}
+
+.movie:hover{
+transform:scale(1.05);
+}
+
+.movie img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.movie h3{
+padding:10px;
+font-size:16px;
+}
+
+footer{
+padding:20px;
+text-align:center;
+background:#111;
+margin-top:30px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<div class="logo">PHIM MỚI</div>
+
+<nav>
+<a href="#">Trang chủ</a>
+<a href="#">Phim lẻ</a>
+<a href="#">Phim bộ</a>
+<a href="#">Anime</a>
+</nav>
+</header>
+
+<div class="banner">
+Kho phim bản quyền
+</div>
+
+<section class="movies">
+
+<h2>Phim nổi bật</h2>
+
+<div class="movie-grid">
+
+<div class="movie">
+<img src="https://picsum.photos/300/400?1">
+<h3>Squid Game</h3>
+</div>
+
+<div class="movie">
+<img src="https://picsum.photos/300/400?2">
+<h3>Wednesday</h3>
+</div>
+
+<div class="movie">
+<img src="https://picsum.photos/300/400?3">
+<h3>Avengers Endgame</h3>
+</div>
+
+<div class="movie">
+<img src="https://picsum.photos/300/400?4">
+<h3>Mai</h3>
+</div>
+
+</div>
+
+</section>
+
+<footer>
+© 2026 PHIM MỚI
+</footer>
+
+</body>
+</html>
