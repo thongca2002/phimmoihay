@@ -19,7 +19,7 @@
   
   <style>
     /* ==========================================================
-       🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
+        🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
     ========================================================== */
     :root {
       --main-color: #ff000d; 
@@ -380,7 +380,7 @@
 <header id="webHeader">
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm tên phim...">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim..." onkeyup="if(event.key === 'Enter') searchMovies()">
     <button onclick="searchMovies()">Tìm</button>
   </div>
 </header>
@@ -404,7 +404,6 @@ const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67";
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_PATH = "https://image.tmdb.org/t/p/w500";
 
-// ĐÃ CHÈN LINK PHIM CHUẨN CỦA BẠN SANG DẠNG ĐƯỢC NHÚNG (/e/)
 const MY_MOVIES_DATA = [
   {
     id: "my_1",
@@ -426,7 +425,13 @@ async function fetchMovies(page = 1) {
   currentPage = page;
   
   if (currentType === "my_movies") {
-    displayMovies(MY_MOVIES_DATA, true);
+    // Nếu đang tìm kiếm trong kho cá nhân
+    if (isSearching) {
+      let filtered = MY_MOVIES_DATA.filter(m => m.title.toLowerCase().includes(currentQuery));
+      displayMovies(filtered, true);
+    } else {
+      displayMovies(MY_MOVIES_DATA, true);
+    }
     document.getElementById("paginationContainer").innerHTML = "";
     return;
   }
@@ -479,12 +484,21 @@ function displayMovies(movies, isLocal) {
 }
 
 function openApiMovie(id) {
+  // Tạo trải nghiệm loading mượt hơn
+  toggleDetailView(true);
+  document.getElementById("modDetail").innerHTML = "<p style='text-align:center; padding-top:100px; color:#aaa;'>Đang tải dữ liệu phim...</p>";
+
   fetch(`${API_URL}/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`)
     .then(res => res.json())
     .then(m => {
-      toggleDetailView(true);
       let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
       renderDetail(m.title, embedUrl, m.overview || "Đang cập nhật nội dung tóm tắt...");
+    })
+    .catch(() => {
+      document.getElementById("modDetail").innerHTML = `
+        <button class="btn-back" onclick="backToList()">⬅ Quay lại</button>
+        <p style='text-align:center; padding-top:50px; color:#aaa;'>Lỗi tải thông tin phim.</p>
+      `;
     });
 }
 
@@ -590,17 +604,17 @@ function switchCategory(type, element) {
 
 function searchMovies() {
   let query = document.getElementById("searchInput").value.trim().toLowerCase();
-  if (query === "") return;
-  
-  if (currentType === "my_movies") {
-    let filtered = MY_MOVIES_DATA.filter(m => m.title.toLowerCase().includes(query));
-    displayMovies(filtered, true);
-  } else {
-    currentQuery = query;
-    isSearching = true;
-    backToList();
+  if (query === "") {
+    // Nếu xóa rỗng thanh tìm kiếm thì khôi phục lại danh sách danh mục ban đầu
+    isSearching = false;
     fetchMovies(1);
+    return;
   }
+  
+  currentQuery = query;
+  isSearching = true;
+  backToList();
+  fetchMovies(1);
 }
 
 function backToList() {
