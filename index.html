@@ -3,66 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang Phim Tổng Hợp</title>
+  <title>PHIM MỚI - Thế Giới Phim Trực Tuyến</title>
   <style>
+    :root {
+      --main-color: #e50914; /* Màu đỏ thương hiệu */
+      --bg-color: #0c0c0c;
+      --card-bg: #181818;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg-color);
       color: white;
     }
 
+    /* Thanh Header của trang web */
     header {
-      background: #e50914;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
+      background: #000;
+      padding: 15px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--main-color);
+    }
+
+    .logo {
+      font-size: 26px;
       font-weight: bold;
+      color: var(--main-color);
+      text-decoration: none;
+      cursor: pointer;
       letter-spacing: 1px;
     }
 
-    /* Thanh chọn danh mục Phim */
+    .search-box {
+      display: flex;
+      gap: 5px;
+    }
+
+    .search-box input {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #222;
+      color: white;
+      outline: none;
+      width: 200px;
+    }
+
+    .search-box button {
+      background: var(--main-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Thanh chọn danh mục Phim Mới */
     .tabs {
       display: flex;
       justify-content: center;
-      background: #181818;
-      padding: 10px 0;
-      border-bottom: 1px solid #282828;
+      flex-wrap: wrap;
+      background: #151515;
+      padding: 12px;
+      gap: 8px;
     }
 
     .tab-btn {
-      background: none;
-      border: none;
-      color: #aaa;
-      padding: 10px 20px;
-      font-size: 16px;
+      background: #222;
+      border: 1px solid #333;
+      color: #ccc;
+      padding: 8px 18px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      transition: color 0.3s;
+      border-radius: 20px; /* Bo tròn các nút danh mục */
+      transition: all 0.3s;
     }
 
     .tab-btn:hover, .tab-btn.active {
-      color: #e50914;
+      color: white;
+      background: var(--main-color);
+      border-color: var(--main-color);
     }
 
+    /* Lưới hiển thị danh sách phim */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 15px;
-      padding: 20px;
+      gap: 20px;
+      padding: 25px;
     }
 
     .card {
-      background: #1c1c1c;
-      border-radius: 10px;
+      background: var(--card-bg);
+      border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
     }
 
     .card img {
@@ -72,17 +119,41 @@
     }
 
     .card p {
-      margin: 8px;
+      margin: 10px;
       font-size: 14px;
       font-weight: bold;
       text-align: center;
-      /* Giới hạn tên phim trong 2 dòng để giao diện đều nhau */
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;  
       overflow: hidden;
+      height: 38px;
     }
 
+    /* Khu vực chuyển trang */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .page-btn {
+      background: #222;
+      color: white;
+      border: 1px solid #444;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Trang chi tiết & Trình phát phim */
     .detail {
       display: none;
       padding: 20px;
@@ -97,24 +168,21 @@
       overflow: hidden;
       margin-top: 15px;
       background: #000;
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     .video-container iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
     }
 
     .btn {
-      background: #e50914;
+      background: var(--main-color);
       border: none;
       padding: 10px 20px;
       color: white;
       cursor: pointer;
-      margin-top: 15px;
+      margin-bottom: 15px;
       border-radius: 5px;
       font-weight: bold;
     }
@@ -124,15 +192,30 @@
 
 <body>
 
-<header>🎬 PHIM MỚI MỖI NGÀY</header>
+<header>
+  <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim mới...">
+    <button onclick="searchMovies()">Tìm Kiếm</button>
+  </div>
+</header>
 
 <div class="tabs" id="tabContainer">
-  <button class="tab-btn active" onclick="switchCategory('movie/popular', this)">Phim Lẻ Hot</button>
-  <button class="tab-btn" onclick="switchCategory('tv/popular', this)">Phim Bộ (TV Show)</button>
-  <button class="tab-btn" onclick="switchCategory('movie/now_playing', this)">Phim Chiếu Rạp</button>
+  <button class="tab-btn active" onclick="switchCategory('movie', 'now_playing', '', this)">Phim Chiếu Rạp Mới</button>
+  <button class="tab-btn" onclick="switchCategory('tv', 'on_the_air', '', this)">Phim Bộ Mới</button>
+  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '28', this)">Hành Động Mới</button>
+  <button class="tab-btn" onclick="switchCategory('movie', 'discover', '878', this)">Viễn Tưởng Mới</button>
 </div>
 
-<div id="list" class="grid"></div>
+<div id="mainSection">
+  <div id="list" class="grid"></div>
+  
+  <div class="pagination" id="paginationContainer">
+    <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Trang trước</button>
+    <span id="pageNumber">Trang 1</span>
+    <button class="page-btn" id="nextBtn" onclick="changePage(1)">Trang sau</button>
+  </div>
+</div>
 
 <div id="detail" class="detail"></div>
 
@@ -141,29 +224,55 @@
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 const IMG = "https://image.tmdb.org/t/p/w500";
 
-let currentEndpoint = "movie/popular"; // Mặc định khi vào trang sẽ tải phim lẻ hot
+let currentType = "movie";     // movie hoặc tv
+let currentCategory = "now_playing"; // now_playing, on_the_air, discover
+let currentGenre = "";         // Mã ID thể loại phim
+let currentPage = 1;
+let isSearching = false;
 
-// ===== TẢI DỮ LIỆU THEO DANH MỤC =====
-async function loadMovies(endpoint){
+// ===== TẢI PHIM TỪ API =====
+async function loadMovies(){
   try {
-    let res = await fetch(`https://api.themoviedb.org/3/${endpoint}?api_key=${TMDB_KEY}&language=vi-VN&page=1`);
+    let url = "";
+    let query = document.getElementById("searchInput").value.trim();
+
+    if (isSearching && query !== "") {
+      // API Tìm kiếm phim theo tên bạn nhập
+      url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=vi-VN&page=${currentPage}`;
+    } else if (currentCategory === "discover") {
+      // API Lọc theo thể loại phim mới (Hành động, viễn tưởng...)
+      url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${TMDB_KEY}&with_genres=${currentGenre}&language=vi-VN&sort_by=primary_release_date.desc&page=${currentPage}`;
+    } else {
+      // API Lấy danh sách phim chiếu rạp mới hoặc phim bộ mới phát sóng
+      url = `https://api.themoviedb.org/3/${currentType}/${currentCategory}?api_key=${TMDB_KEY}&language=vi-VN&page=${currentPage}`;
+    }
+
+    let res = await fetch(url);
     let data = await res.json();
     
-    // Lưu ý: Phim bộ dùng trường 'name', phim lẻ dùng trường 'title'
-    show(data.results, endpoint.startsWith('tv'));
+    show(data.results, currentType === 'tv');
+    
+    // Cập nhật trạng thái các nút phân trang
+    document.getElementById("pageNumber").innerText = `Trang ${currentPage}`;
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = !data.total_pages || currentPage >= data.total_pages;
   } catch (error) {
-    console.error("Lỗi kết nối API:", error);
+    console.error("Lỗi kết nối dữ liệu:", error);
   }
 }
 
-// ===== HIỂN THỊ DANH SÁCH RA MÀN HÌNH =====
+// ===== HIỂN THỊ DANH SÁCH RA GIAO DIỆN =====
 function show(movies, isTVSeries){
   let html = "";
+  if (!movies || movies.length === 0) {
+    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim mới nào.</p>";
+    return;
+  }
+
   movies.forEach(m => {
     let poster = m.poster_path ? (IMG + m.poster_path) : 'https://placehold.co/500x750?text=No+Image';
-    let title = isTVSeries ? m.name : m.title; // Lấy đúng tên phim tùy thể loại
+    let title = isTVSeries ? m.name : m.title; 
     
-    // Truyền thêm cờ dữ liệu để biết khi nhấn vào là phim bộ hay phim lẻ
     html += `
       <div class="card" onclick="detail(${m.id}, ${isTVSeries})">
         <img src="${poster}">
@@ -174,65 +283,92 @@ function show(movies, isTVSeries){
   document.getElementById("list").innerHTML = html;
 }
 
-// ===== CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB =====
-function switchCategory(endpoint, buttonElement) {
-  // Xóa class active ở nút cũ, thêm vào nút mới bấm
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  buttonElement.classList.add('active');
+// ===== CHỨC NĂNG TÌM KIẾM =====
+function searchMovies() {
+  let query = document.getElementById("searchInput").value.trim();
+  if (query === "") return;
+  isSearching = true;
+  currentPage = 1;
+  currentGenre = "";
+  currentCategory = "";
+  currentType = "movie";
   
-  // Reset lại giao diện danh sách
+  // Bỏ chọn hiệu ứng các nút danh mục
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   backToList();
-  currentEndpoint = endpoint;
-  loadMovies(endpoint);
+  loadMovies();
 }
 
-// ===== CHI TIẾT & TRÌNH PHÁT VIDEO =====
+// ===== CHUYỂN ĐỔI GIỮA CÁC DANH MỤC =====
+function switchCategory(type, category, genreId, buttonElement) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  buttonElement.classList.add('active');
+  document.getElementById("searchInput").value = ""; 
+  
+  isSearching = false;
+  currentPage = 1;
+  currentType = type;
+  currentCategory = category;
+  currentGenre = genreId;
+  backToList();
+  loadMovies();
+}
+
+// ===== ĐIỀU HƯỚNG CHUYỂN TRANG =====
+function changePage(direction) {
+  currentPage += direction;
+  window.scrollTo({top: 0, behavior: 'smooth'}); // Cuộn mượt lên đầu trang
+  loadMovies();
+}
+
+// ===== TRANG XEM PHIM CHI TIẾT & NHÚNG VIDEO =====
 async function detail(id, isTVSeries){
   try {
-    // Xác định xem cần lấy thông tin chi tiết phim bộ (tv) hay phim lẻ (movie)
     let type = isTVSeries ? 'tv' : 'movie';
     let res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=vi-VN`);
     let m = await res.json();
 
-    document.getElementById("list").style.display = "none";
-    document.getElementById("tabContainer").style.display = "none"; // Ẩn thanh tab khi đang xem phim
+    document.getElementById("mainSection").style.display = "none";
+    document.getElementById("tabContainer").style.display = "none"; 
     document.getElementById("detail").style.display = "block";
 
     let title = isTVSeries ? m.name : m.title;
     
-    // Cấu hình đường dẫn nhúng tương ứng cho Phim lẻ (movie) hoặc Phim bộ (tv)
+    // Đường dẫn lấy nguồn phát video từ bên thứ ba
     let embedUrl = isTVSeries 
-      ? `https://vidsrc.me/embed/tv?id=${id}&season=1&episode=1` // Mặc định tập 1 mùa 1 cho phim bộ
+      ? `https://vidsrc.me/embed/tv?id=${id}&season=1&episode=1` 
       : `https://vidsrc.me/embed/movie/${id}`;
 
     document.getElementById("detail").innerHTML = `
-      <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
+      <button class="btn" onclick="backToList()">⬅ Quay lại</button>
       <h2>${title}</h2>
       
       <div class="video-container">
         <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
       </div>
-
-      ${isTVSeries ? '<p style="color: #e50914; font-size: 14px; margin-top:10px;">💡 Đối với phim bộ, bạn có thể chọn tập/mùa trực tiếp bên trong trình phát video (Nút Select Episode).</p>' : ''}
-
-      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung:</strong> ${m.overview || "Chưa có nội dung tóm tắt tiếng Việt."}</p>
+      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Nội dung phim mới đang được cập nhật bản dịch tiếng Việt."}</p>
     `;
   } catch (error) {
-    console.error("Lỗi tải phim:", error);
+    console.error("Lỗi khi tải trình phát phim:", error);
   }
 }
 
-// ===== QUAY LẠI =====
+// ===== QUAY LẠI DANH SÁCH =====
 function backToList() {
   document.getElementById("detail").style.display = "none";
-  document.getElementById("list").style.display = "grid";
+  document.getElementById("mainSection").style.display = "block";
   document.getElementById("tabContainer").style.display = "flex";
-  document.getElementById("detail").innerHTML = ""; // Xóa iframe cũ
+  document.getElementById("detail").innerHTML = ""; 
 }
 
-// Khởi chạy ứng dụng lần đầu tiên
-loadMovies(currentEndpoint);
+// ===== BẤM VÀO LOGO ĐỂ VỀ TRANG CHỦ =====
+function goHome() {
+  document.getElementById("searchInput").value = "";
+  switchCategory('movie', 'now_playing', '', document.querySelector('.tab-btn'));
+}
 
+// Tự động chạy khi tải trang
+loadMovies();
 </script>
 
 </body>
