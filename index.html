@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Phim Mới</title>
-
+  <meta charset="UTF-8">
+  <title>Phim & Tập Mới</title>
   <style>
     body {
       margin: 0;
@@ -17,51 +15,44 @@
       background: #e50914;
       padding: 15px;
       text-align: center;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      background: #222;
-      padding: 10px;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    nav a:hover {
-      color: #e50914;
     }
 
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 10px;
       padding: 15px;
     }
 
-    .movie {
+    .card {
       background: #1c1c1c;
       border-radius: 10px;
       overflow: hidden;
       cursor: pointer;
+      transition: 0.2s;
     }
 
-    .movie img {
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
       width: 100%;
       height: 220px;
       object-fit: cover;
     }
 
-    .movie p {
-      margin: 5px;
+    .card h3 {
       font-size: 14px;
+      margin: 8px;
+    }
+
+    .card p {
+      font-size: 12px;
+      margin: 8px;
+      color: #aaa;
     }
 
     .detail {
@@ -71,9 +62,9 @@
 
     .btn {
       background: #e50914;
+      border: none;
       color: white;
       padding: 10px;
-      border: none;
       cursor: pointer;
       margin-top: 10px;
     }
@@ -82,80 +73,88 @@
 
 <body>
 
-<header>🎬 PHIM MỚI</header>
-
-<nav>
-  <a onclick="loadMovies()">Trang chủ</a>
-  <a onclick="loadPopular()">Phim hot</a>
-  <a onclick="loadTop()">Xem nhiều</a>
-</nav>
+<header>🎬 DANH SÁCH EPISODE</header>
 
 <div id="list" class="container"></div>
 
 <div id="detail" class="detail"></div>
 
 <script>
-const API_KEY = "YOUR_API_KEY"; 
-const ACCOUNT_ID = "23137437";
+// ====== DÁN JSON CỦA BẠN VÀO ĐÂY ======
+const data = {
+  results: [
+    {
+      air_date: "2013-10-17",
+      episode_number: 5,
+      name: "The Workplace Proximity",
+      overview: "Amy starts working at Caltech...",
+      still_path: "/k8atjbd5gAsntuhbPnFpvnvo0qn.jpg",
+      vote_average: 7.2
+    },
+    {
+      air_date: "2013-12-08",
+      episode_number: 11,
+      name: "Big Man in Tehran",
+      overview: "Brody's loyalty to the mission...",
+      still_path: "/2JYvwe7HoEkn3BQhhHCyPzhqhh5.jpg",
+      vote_average: 8
+    },
+    {
+      air_date: "2014-03-23",
+      episode_number: 15,
+      name: "Dramatics, Your Honor",
+      overview: "Alicia asks Cary to be her lawyer...",
+      still_path: "/eGQg94nfM6EhKrxGA8A92SXe3WT.jpg",
+      vote_average: 8.2
+    }
+  ]
+};
+
 const IMG = "https://image.tmdb.org/t/p/w500";
 
-// Load phim mới
-async function loadMovies(){
-  document.getElementById("detail").style.display = "none";
-  document.getElementById("list").style.display = "grid";
-
-  let res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=vi`);
-  let data = await res.json();
-
-  showMovies(data.results);
-}
-
-// Phim hot
-async function loadPopular(){
-  let res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=vi`);
-  let data = await res.json();
-  showMovies(data.results);
-}
-
-// Xem nhiều
-async function loadTop(){
-  let res = await fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=vi`);
-  let data = await res.json();
-  showMovies(data.results);
-}
-
-// Hiển thị list phim
-function showMovies(movies){
+// ====== HIỂN THỊ LIST ======
+function showList(){
   let html = "";
-  movies.forEach(m=>{
+
+  data.results.forEach((ep, i) => {
     html += `
-      <div class="movie" onclick="movieDetail(${m.id})">
-        <img src="${IMG + m.poster_path}">
-        <p>${m.title}</p>
+      <div class="card" onclick="showDetail(${i})">
+        <img src="${IMG + ep.still_path}">
+        <h3>Ep ${ep.episode_number}: ${ep.name}</h3>
+        <p>${ep.air_date}</p>
       </div>
     `;
   });
+
   document.getElementById("list").innerHTML = html;
 }
 
-// Chi tiết phim
-async function movieDetail(id){
-  let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=vi`);
-  let m = await res.json();
+// ====== CHI TIẾT ======
+function showDetail(i){
+  let ep = data.results[i];
 
   document.getElementById("list").style.display = "none";
   document.getElementById("detail").style.display = "block";
 
   document.getElementById("detail").innerHTML = `
-    <h2>${m.title}</h2>
-    <img src="${IMG + m.poster_path}" style="width:200px;border-radius:10px;">
-    <p>${m.overview}</p>
-    <button class="btn" onclick="loadMovies()">⬅ Quay lại</button>
+    <h2>Episode ${ep.episode_number}</h2>
+    <img src="${IMG + ep.still_path}" style="width:300px;border-radius:10px;">
+    <p><b>${ep.name}</b></p>
+    <p>${ep.overview}</p>
+    <p>⭐ Rating: ${ep.vote_average}</p>
+
+    <button class="btn" onclick="back()">⬅ Quay lại</button>
   `;
 }
 
-// chạy mặc định
-loadMovies();
+// ====== QUAY LẠI ======
+function back(){
+  document.getElementById("detail").style.display = "none";
+  document.getElementById("list").style.display = "grid";
+}
+
+// chạy
+showList();
 </script>
 
 </body>
