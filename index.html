@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBJDZD2G5X"></script>
+<html lang="vi"><head>
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NBJDZD2G5X"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -12,16 +11,14 @@
 
   <script src="https://pl29466224.effectivecpmnetwork.com/8b/ba/c9/8bbac9274aa84b4fbcd32db51cc25681.js"></script>
   
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="_qvRq2uxGuWnTbVkf-P-UYKSRb_qnPltxTEA6by4Gfk" />
   
   <title>Phim mới phim online mỗi ngày</title>
   
   <style>
     /* ==========================================================
-       🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
+        🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
     ========================================================== */
     :root {
       --main-color: #ff000d; 
@@ -200,6 +197,7 @@
     .card img {
       width: 100%;
       height: 270px; 
+      box-sizing: border-box;
       object-fit: cover;
       transition: all 0.3s;
     }
@@ -373,6 +371,12 @@
 </head>
 <body>
 
+<div style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">
+  <h1>Phim Mới - Xem Phim Online Hay Mỗi Ngày Tại thongca2002</h1>
+  <p>Chào mừng bạn đến với trang web xem phim trực tuyến phimmoihay thongca2002 github. Tại đây cập nhật liên tục các bộ phim bom tấn độc quyền phổ biến, phim đang chiếu rạp và điểm cao chất lượng full HD mới nhất.</p>
+  <p>Danh sách phim nổi bật hôm nay bao gồm bộ phim độc quyền: Phú Nhân Đại Quân Thế Kỷ 21, cùng hàng loạt siêu phẩm hot thế giới như Avatar Lửa và Tro Tàn, Cuộc Chiến Sinh Tử, Mortal Kombat, Quái Vật Võ Đài, Sát Thủ Yêu Dấu, Trò Chơi Của Quỷ, Thoát Khỏi Tận Thế.</p>
+</div>
+
 <div class="dark-mode-overlay" id="lightOverlay"></div>
 
 <div class="ad-notice" id="adNotice">
@@ -382,21 +386,121 @@
 <header id="webHeader">
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm tên phim...">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim..." />
     <button onclick="searchMovies()">Tìm</button>
   </div>
 </header>
 
 <div class="tabs" id="tabContainer">
-  <button class="tab-btn active" onclick="switchCategory('popular', this)">Phổ Biến</button>
-  <button class="tab-btn" onclick="switchCategory('now_playing', this)">Đang Chiếu</button>
-  <button class="tab-btn" onclick="switchCategory('top_rated', this)">Điểm Cao</button>
-  <button class="tab-btn tab-btn-special" onclick="switchCategory('my_movies', this)">⭐ Bộ Phim Của Tôi</button>
+  <button class="tab-btn active" onclick="switchCategory(&#39;popular&#39;, this)">Phổ Biến</button>
+  <button class="tab-btn" onclick="switchCategory(&#39;now_playing&#39;, this)">Đang Chiếu</button>
+  <button class="tab-btn" onclick="switchCategory(&#39;top_rated&#39;, this)">Điểm Cao</button>
+  <button class="tab-btn tab-btn-special" onclick="switchCategory(&#39;my_movies&#39;, this)">⭐ Bộ Phim Của Tôi</button>
 </div>
 
 <div id="mainSection">
-  <div id="list" class="grid"></div>
-  <div id="paginationContainer" class="pagination"></div>
+  <div id="list" class="grid">
+        <div class="card" onclick="openApiMovie(1439930)">
+          <img src="https://image.tmdb.org/t/p/w500/gOggsBCSypNXq0yApYeXe7nnopT.jpg" alt="Một Chương Trình Đặc Biệt từ Marvel Television - The Punisher: Phát Súng Cuối Cùng" />
+          <p>Một Chương Trình Đặc Biệt từ Marvel Television - The Punisher: Phát Súng Cuối Cùng</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(687163)">
+          <img src="https://image.tmdb.org/t/p/w500/7NzV9SN5ocWzMrdQw9fFDgLYVJC.jpg" alt="Thoát Khỏi Tận Thế" />
+          <p>Thoát Khỏi Tận Thế</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1007757)">
+          <img src="https://image.tmdb.org/t/p/w500/te3zACrsYkS2x3mkjG6htLqhMo4.jpg" alt="Cuộc phiêu lưu biến hóa" />
+          <p>Cuộc phiêu lưu biến hóa</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1226863)">
+          <img src="https://image.tmdb.org/t/p/w500/h1FlxHYiVcZVkIE5XW599ZkV6Sr.jpg" alt="Phim Super Mario Thiên Hà" />
+          <p>Phim Super Mario Thiên Hà</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(350)">
+          <img src="https://image.tmdb.org/t/p/w500/d4nV102c3QLA5T77tjfq9tcCvmi.jpg" alt="Yêu Nữ Thích Hàng Hiệu" />
+          <p>Yêu Nữ Thích Hàng Hiệu</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1318447)">
+          <img src="https://image.tmdb.org/t/p/w500/jMSlZZScFPA6YqatxzrixoMlTDk.jpg" alt="Săn Mạng" />
+          <p>Săn Mạng</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1669050)">
+          <img src="https://image.tmdb.org/t/p/w500/gkHNa8q3RNhgj2EMuoYWJUHsMa6.jpg" alt="Tayuan 2" />
+          <p>Tayuan 2</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1523145)">
+          <img src="https://image.tmdb.org/t/p/w500/iGpMm603GUKH2SiXB2S5m4sZ17t.jpg" alt="Твоё сердце будет разбито" />
+          <p>Твоё сердце будет разбито</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1630423)">
+          <img src="https://image.tmdb.org/t/p/w500/b1VNnA0ewb6F0hccCpPpXD8c8oT.jpg" alt="Sát Thủ Yêu Dấu" />
+          <p>Sát Thủ Yêu Dấu</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(931285)">
+          <img src="https://image.tmdb.org/t/p/w500/f9tWGssOpViDbh6dV6gtLFiCc7i.jpg" alt="Cuộc Chiến Sinh Tử II" />
+          <p>Cuộc Chiến Sinh Tử II</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(83533)">
+          <img src="https://image.tmdb.org/t/p/w500/w6DBmG260sCHBQdGzkBIVn9gAQZ.jpg" alt="Avatar: Lửa và Tro Tàn" />
+          <p>Avatar: Lửa và Tro Tàn</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1266127)">
+          <img src="https://image.tmdb.org/t/p/w500/9eWzfMfdd9JHDhPqKdNB9Y08T6B.jpg" alt="Trò Chơi Của Quỷ 2" />
+          <p>Trò Chơi Của Quỷ 2</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1292415)">
+          <img src="https://image.tmdb.org/t/p/w500/7NrvUI3vnW8H3rD7ExKcTL7KRcQ.jpg" alt="Quái Vật Võ Đài" />
+          <p>Quái Vật Võ Đài</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1327819)">
+          <img src="https://image.tmdb.org/t/p/w500/1A7WxXAYddDCrO9dTCEdSzQKU9d.jpg" alt="Hoppers: Cú Nhảy Kỳ Diệu" />
+          <p>Hoppers: Cú Nhảy Kỳ Diệu</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(460465)">
+          <img src="https://image.tmdb.org/t/p/w500/5iHZ6KUSnLEnStXJ6BfFA5Uk2PT.jpg" alt="Mortal Kombat: Cuộc Chiến Sinh Tử" />
+          <p>Mortal Kombat: Cuộc Chiến Sinh Tử</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(936075)">
+          <img src="https://image.tmdb.org/t/p/w500/sXP7VzpnHQIThf5v6b64XaczEK2.jpg" alt="Michael" />
+          <p>Michael</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1330021)">
+          <img src="https://image.tmdb.org/t/p/w500/9HcEqn3D4J6b2Z0jK54id9nA0fr.jpg" alt="Kỷ vật vô giá" />
+          <p>Kỷ vật vô giá</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1198994)">
+          <img src="https://image.tmdb.org/t/p/w500/hu5J1hJYToOxjceeqyXogq5nRwt.jpg" alt="Cứu" />
+          <p>Cứu</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1426822)">
+          <img src="https://image.tmdb.org/t/p/w500/iCvucorbs3hFqWshDbLe0fHzB71.jpg" alt="Mortal Game" />
+          <p>Mortal Game</p>
+        </div>
+      
+        <div class="card" onclick="openApiMovie(1241752)">
+          <img src="https://image.tmdb.org/t/p/w500/grIFQLXXwQmjvYYfXVXCgGTMUWw.jpg" alt="Tân Nương Khát Tình" />
+          <p>Tân Nương Khát Tình</p>
+        </div>
+      </div>
+  <div id="paginationContainer" class="pagination"><button class="page-btn" disabled onclick="changePage(0)">Trước</button><button class="page-btn active" onclick="changePage(1)">1</button><button class="page-btn " onclick="changePage(2)">2</button><button class="page-btn " onclick="changePage(3)">3</button><span style="color:#666; padding:0 5px;">...</span><button class="page-btn" onclick="changePage(500)">500</button><button class="page-btn" onclick="changePage(2)">Sau</button></div>
 </div>
 
 <div id="modDetail" class="detail"></div>
@@ -618,5 +722,4 @@ function goHome() {
 fetchMovies(1);
 </script>
 
-</body>
-</html>
+</body></html>
