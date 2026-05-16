@@ -6,167 +6,241 @@
   
   <meta name="google-site-verification" content="_qvRq2uxGuWnTbVkf-P-UYKSRb_qnPltxTEA6by4Gfk" />
   
-  <title>PHIM MỚI - Xem Phim Online Hay Miễn Phí Mới Nhất</title>
-  <meta name="description" content="Trang web xem phim mới, phim hay trực tuyến cập nhật liên tục mỗi ngày. Tổng hợp phim bom tấn rạp, hành động, kinh dị thuyết minh vietsub tốc độ cao cực mượt mà.">
-  <meta name="keywords" content="phim moi, xem phim, phim hay, phim online, thongca2002, phim vietsub, phim rap, phim lậu">
-  <meta name="robots" content="index, follow">
+  <title>PHIM MỚI - Giao diện Cinema Sang Trọng</title>
   
   <style>
+    /* ==========================================================
+       🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
+    ========================================================== */
     :root {
-      --main-color: #e50914; 
-      --bg-color: #0c0c0c;
-      --card-bg: #181818;
+      --main-color: #ff000d; /* Màu đỏ neon nổi bật hơn */
+      --bg-color: #050505;  /* Đen sâu hơn */
+      --card-bg: #111111;
+      --glass: rgba(255, 255, 255, 0.05); /* Hiệu ứng kính mờ */
     }
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg-color);
       color: white;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* Thanh mẹo nhỏ đầu trang - Làm gọn lại */
     .ad-notice {
-      background: #311b92;
-      color: #fff;
+      background: linear-gradient(90deg, #1a237e, #311b92);
+      color: #rgba(255,255,255,0.8);
       text-align: center;
-      padding: 8px 10px;
-      font-size: 13px;
-      font-weight: bold;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
+    /* Header - Thiết kế lại tối giản, kính mờ */
     header {
-      background: #000;
-      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px); /* Kính mờ */
+      padding: 15px 4%;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid var(--main-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,0,0,0.2);
     }
 
     .logo {
-      font-size: 26px;
-      font-weight: bold;
+      font-size: 28px;
+      font-weight: 900;
       color: var(--main-color);
       text-decoration: none;
       cursor: pointer;
-      letter-spacing: 1px;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(255,0,0,0.5);
     }
 
+    /* Search Box - Thiết kế lại bo mượt */
     .search-box {
       display: flex;
-      gap: 5px;
+      gap: 0;
+      background: #222;
+      border-radius: 50px;
+      overflow: hidden;
+      border: 1px solid #333;
+      transition: all 0.3s;
+    }
+    
+    .search-box:focus-within {
+      border-color: var(--main-color);
+      box-shadow: 0 0 10px rgba(255,0,0,0.3);
     }
 
     .search-box input {
-      padding: 8px 15px;
-      border-radius: 5px;
-      border: 1px solid #333;
-      background: #222;
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
       color: white;
       outline: none;
-      width: 200px;
+      width: 220px;
+      font-size: 14px;
     }
 
     .search-box button {
       background: var(--main-color);
       color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
+      padding: 10px 25px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
     }
 
+    /* Navigation Tabs - Glassmorphism, bo góc Neon */
     .tabs {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      background: #151515;
-      padding: 12px;
-      gap: 8px;
+      background: rgba(20,20,20,0.6);
+      backdrop-filter: blur(5px);
+      padding: 15px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .tab-btn {
-      background: #222;
-      border: 1px solid #333;
-      color: #ccc;
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: bold;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      border-radius: 20px; 
-      transition: all 0.3s;
+      border-radius: 50px; /* Bo góc tròn mượt */
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .tab-btn:hover, .tab-btn.active {
+    .tab-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .tab-btn.active {
       color: white;
       background: var(--main-color);
       border-color: var(--main-color);
+      box-shadow: 0 0 15px rgba(255,0,0,0.5);
+    }
+    
+    /* Tab đặc biệt của bạn */
+    .tab-btn-special {
+      background: linear-gradient(45deg, #2e7d32, #66bb6a) !important;
+      border-color: transparent !important;
+      color: white !important;
+    }
+    
+    .tab-btn-special.active {
+      box-shadow: 0 0 15px rgba(76,175,80,0.6) !important;
     }
 
+    /* Grid - Tối ưu khoảng cách */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 20px;
-      padding: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 25px;
+      padding: 30px 4%;
     }
 
+    /* Card - Thiết kế lại Premium */
     .card {
       background: var(--card-bg);
-      border-radius: 8px;
+      border-radius: 12px; /* Bo góc nhiều hơn */
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255,255,255,0.03);
+      position: relative;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,0,0,0.2);
+      border-color: rgba(255,0,0,0.3);
+    }
+
+    /* Hiệu ứng bóng mờ nhẹ bên dưới ảnh */
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      z-index: 1;
     }
 
     .card img {
       width: 100%;
-      height: 240px;
+      height: 270px; /* Tăng chiều cao ảnh */
       object-fit: cover;
+      transition: all 0.3s;
     }
 
+    .card:hover img {
+      filter: brightness(1.1);
+    }
+
+    /* Tên phim - To, rõ, nằm đè lên bóng mờ */
     .card p {
-      margin: 10px;
-      font-size: 14px;
-      font-weight: bold;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 800;
       text-align: center;
+      z-index: 2;
+      box-sizing: border-box;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;  
       overflow: hidden;
-      height: 38px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
+    /* Phân trang - Thiết kế tối giản */
     .pagination {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      gap: 5px;
-      padding: 20px;
-      margin-bottom: 30px;
+      gap: 8px;
+      padding: 30px;
+      margin-bottom: 40px;
     }
 
     .page-btn {
-      background: #222;
-      border: 1px solid #333;
-      color: #ccc;
-      padding: 8px 14px;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+      padding: 10px 18px;
       font-size: 14px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 8px;
       transition: all 0.2s;
     }
 
     .page-btn:hover:not(:disabled) {
-      background: #333;
+      background: rgba(255,255,255,0.1);
       color: white;
     }
 
@@ -174,17 +248,19 @@
       background: var(--main-color);
       color: white;
       border-color: var(--main-color);
+      box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
 
     .page-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.3;
       cursor: not-allowed;
     }
 
+    /* Chi tiết phim - Giao diện Cinema */
     .detail {
       display: none;
-      padding: 20px;
-      max-width: 900px;
+      padding: 40px 4%;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -193,48 +269,75 @@
       padding-bottom: 56.25%; 
       height: 0;
       overflow: hidden;
-      margin-top: 15px;
+      margin-top: 25px;
       background: #000;
-      border-radius: 8px;
+      border-radius: 16px; /* Bo góc trình phát */
+      box-shadow: 0 15px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
     .video-container iframe {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
     }
+    
+    .detail h2 {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
 
-    .btn {
-      background: var(--main-color);
-      border: none;
-      padding: 10px 20px;
+    .btn-back {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 24px;
       color: white;
       cursor: pointer;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      font-weight: bold;
+      margin-bottom: 25px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
+      transition: all 0.3s;
     }
-    .btn:hover { background: #b80710; }
+    .btn-back:hover { 
+      background: rgba(255,255,255,0.15); 
+      transform: translateX(-5px);
+    }
+    
+    .movie-overview {
+      margin-top: 30px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.8;
+      font-size: 16px;
+      background: rgba(20,20,20,0.5);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
   </style>
 </head>
 <body>
 
 <div class="ad-notice">
-  💡 Mẹo: Nên sử dụng trình duyệt Cốc Cốc hoặc cài AdGuard / uBlock để xem phim mượt mà, không bị nhảy quảng cáo rác!
+  💡 Mẹo: Nên sử dụng Brave, Cốc Cốc hoặc cài uBlock Origin để xem phim sạch bóng quảng cáo rác!
 </div>
 
 <header>
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Tìm tên phim...">
-    <button onclick="searchMovies()">Tìm Kiếm</button>
+    <button onclick="searchMovies()">Tìm</button>
   </div>
 </header>
 
 <div class="tabs" id="tabContainer">
-  <button class="tab-btn active" onclick="switchCategory('popular', this)">Phim Phổ Biến</button>
-  <button class="tab-btn" onclick="switchCategory('now_playing', this)">Phim Đang Chiếu</button>
-  <button class="tab-btn" onclick="switchCategory('top_rated', this)">Phim Điểm Cao</button>
-  <button class="tab-btn" style="background: #2e7d32; border-color: #2e7d32;" onclick="switchCategory('my_movies', this)">⭐ Bộ Phim Của Tôi</button>
+  <button class="tab-btn active" onclick="switchCategory('popular', this)">Phổ Biến</button>
+  <button class="tab-btn" onclick="switchCategory('now_playing', this)">Đang Chiếu</button>
+  <button class="tab-btn" onclick="switchCategory('top_rated', this)">Điểm Cao</button>
+  <button class="tab-btn tab-btn-special" onclick="switchCategory('my_movies', this)">⭐ Phim Của Tôi</button>
 </div>
 
 <div id="mainSection">
@@ -259,10 +362,8 @@ const MY_MOVIES_DATA = [
   {
     id: "my_1",
     title: "Phú Nhân Đại Quân Thế Kỷ 21",
-    // Ảnh nền hiển thị (bạn có thể thay link ảnh khác nếu muốn)
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500", 
-    // Link nhúng đã được tự động xử lý chuẩn cấu trúc phát video của Streamtape
-    videoUrl: "https://streamtape.com/e/gP6r4y4qYPiqKoo/", 
+    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500", // Bạn có thể thay link ảnh đại diện khác nếu muốn
+    videoUrl: "https://streamtape.com/e/gP6r4y4qYPiqKoo/", // Link nhúng Streamtape đã đổi /v/ thành /e/
     overview: "Bộ phim tâm lý, tình cảm đặc sắc do bạn tải lên và quản lý trực tiếp trên hệ thống."
   }
 ];
@@ -295,7 +396,7 @@ async function fetchMovies(page = 1) {
     displayMovies(data.results, false);
     setupPagination();
   } catch (err) {
-    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>Không thể kết nối máy chủ dữ liệu phim tự động.</p>";
+    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa; padding: 50px 0;'>Không thể kết nối máy chủ dữ liệu phim tự động.</p>";
   }
 }
 
@@ -304,7 +405,7 @@ function displayMovies(movies, isLocal) {
   let html = "";
 
   if (!movies || movies.length === 0) {
-    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào phù hợp.</p>";
+    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1; padding: 50px 0;'>Không tìm thấy bộ phim nào phù hợp.</p>";
     return;
   }
 
@@ -327,6 +428,7 @@ function displayMovies(movies, isLocal) {
     }
   });
   listDiv.innerHTML = html;
+  window.scrollTo(0, 0); // Tự động cuộn lên đầu khi chuyển trang
 }
 
 function openApiMovie(id) {
@@ -348,12 +450,15 @@ function openLocalMovie(id) {
 
 function renderDetail(title, videoUrl, overview) {
   document.getElementById("modDetail").innerHTML = `
-    <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
+    <button class="btn-back" onclick="backToList()">⬅ Quay lại</button>
     <h2>${title}</h2>
     <div class="video-container">
       <iframe src="${videoUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
     </div>
-    <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${overview}</p>
+    <div class="movie-overview">
+      <p style="margin:0; font-weight:700; color:white; margin-bottom:10px; font-size:18px;">Nội dung phim</p>
+      <p style="margin:0;">${overview}</p>
+    </div>
   `;
 }
 
@@ -378,9 +483,20 @@ function setupPagination() {
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(totalPages, currentPage + 2);
 
+  if (startPage > 1) {
+    html += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+    if (startPage > 2) html += `<span style="color:#666; padding:0 5px;">...</span>`;
+  }
+
   for (let i = startPage; i <= endPage; i++) {
     html += `<button class="page-btn ${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
   }
+  
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) html += `<span style="color:#666; padding:0 5px;">...</span>`;
+    html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+  }
+
   html += `<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Sau</button>`;
   pagDiv.innerHTML = html;
 }
@@ -421,6 +537,7 @@ function backToList() {
 }
 
 function goHome() {
+  document.getElementById("searchInput").value = "";
   switchCategory('popular', document.querySelector('.tab-btn'));
 }
 
