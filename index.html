@@ -2,11 +2,12 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Phim & Tập Mới</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phim Mới Fix</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: #111;
       color: white;
     }
@@ -19,10 +20,10 @@
       font-weight: bold;
     }
 
-    .container {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
       padding: 15px;
     }
 
@@ -31,130 +32,151 @@
       border-radius: 10px;
       overflow: hidden;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.2s;
     }
 
     .card:hover {
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
 
     .card img {
       width: 100%;
-      height: 220px;
+      height: 240px;
       object-fit: cover;
     }
 
-    .card h3 {
-      font-size: 14px;
-      margin: 8px;
-    }
-
     .card p {
-      font-size: 12px;
       margin: 8px;
-      color: #aaa;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
     }
 
     .detail {
       display: none;
       padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Khung chứa video tỉ lệ 16:9 chuẩn */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; 
+      height: 0;
+      overflow: hidden;
+      margin-top: 15px;
+      background: #000;
+      border-radius: 10px;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .btn {
       background: #e50914;
       border: none;
+      padding: 10px 20px;
       color: white;
-      padding: 10px;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
 
-<header>🎬 DANH SÁCH EPISODE</header>
+<header>🎬 PHIM MỚI CỦA TÔI</header>
 
-<div id="list" class="container"></div>
+<div id="list" class="grid"></div>
 
 <div id="detail" class="detail"></div>
 
 <script>
-// ====== DÁN JSON CỦA BẠN VÀO ĐÂY ======
-const data = {
-  results: [
-    {
-      air_date: "2013-10-17",
-      episode_number: 5,
-      name: "The Workplace Proximity",
-      overview: "Amy starts working at Caltech...",
-      still_path: "/k8atjbd5gAsntuhbPnFpvnvo0qn.jpg",
-      vote_average: 7.2
-    },
-    {
-      air_date: "2013-12-08",
-      episode_number: 11,
-      name: "Big Man in Tehran",
-      overview: "Brody's loyalty to the mission...",
-      still_path: "/2JYvwe7HoEkn3BQhhHCyPzhqhh5.jpg",
-      vote_average: 8
-    },
-    {
-      air_date: "2014-03-23",
-      episode_number: 15,
-      name: "Dramatics, Your Honor",
-      overview: "Alicia asks Cary to be her lawyer...",
-      still_path: "/eGQg94nfM6EhKrxGA8A92SXe3WT.jpg",
-      vote_average: 8.2
-    }
-  ]
-};
+// Đã thay mã Access Token v4 cá nhân của bạn vào đây
+const TMDB_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMjFhODVlNjM0M2Q0OTVmN2U4MmVkZmZjM2YyMWQ2NyIsIm5iZiI6MTc3ODc2ODExMi4zNzc5OTk4LCJzdWIiOiI2YTA1ZDhmMDE3MDZkMjkxZjA1ODA1NWYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.ZD0DXp2qLkYSTQD91KhRMAV19CS6ScNaH--IAodQeM0"; 
 
 const IMG = "https://image.tmdb.org/t/p/w500";
 
-// ====== HIỂN THỊ LIST ======
-function showList(){
-  let html = "";
+// Cấu hình thuộc tính xác thực Header bắt buộc
+const apiOptions = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${TMDB_TOKEN}`
+  }
+};
 
-  data.results.forEach((ep, i) => {
+// ===== LOAD PHIM MỚI =====
+async function loadMovies(){
+  try {
+    let res = await fetch('https://api.themoviedb.org/3/movie/now_playing?language=vi-VN&page=1', apiOptions);
+    let data = await res.json();
+    show(data.results);
+  } catch (error) {
+    console.error("Lỗi tải danh sách phim:", error);
+  }
+}
+
+// ===== HIỂN THỊ DANH SÁCH =====
+function show(movies){
+  let html = "";
+  movies.forEach(m => {
+    let poster = m.poster_path ? (IMG + m.poster_path) : 'https://placehold.co/500x750?text=No+Image';
     html += `
-      <div class="card" onclick="showDetail(${i})">
-        <img src="${IMG + ep.still_path}">
-        <h3>Ep ${ep.episode_number}: ${ep.name}</h3>
-        <p>${ep.air_date}</p>
+      <div class="card" onclick="detail(${m.id})">
+        <img src="${poster}">
+        <p>${m.title}</p>
       </div>
     `;
   });
-
   document.getElementById("list").innerHTML = html;
 }
 
-// ====== CHI TIẾT ======
-function showDetail(i){
-  let ep = data.results[i];
+// ===== CHI TIẾT & PHÁT VIDEO =====
+async function detail(id){
+  try {
+    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=vi-VN`, apiOptions);
+    let m = await res.json();
 
-  document.getElementById("list").style.display = "none";
-  document.getElementById("detail").style.display = "block";
+    document.getElementById("list").style.display = "none";
+    document.getElementById("detail").style.display = "block";
 
-  document.getElementById("detail").innerHTML = `
-    <h2>Episode ${ep.episode_number}</h2>
-    <img src="${IMG + ep.still_path}" style="width:300px;border-radius:10px;">
-    <p><b>${ep.name}</b></p>
-    <p>${ep.overview}</p>
-    <p>⭐ Rating: ${ep.vote_average}</p>
+    // Nguồn nhúng tự động tìm phim theo ID TMDB
+    let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
 
-    <button class="btn" onclick="back()">⬅ Quay lại</button>
-  `;
+    document.getElementById("detail").innerHTML = `
+      <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
+      <h2>${m.title}</h2>
+      
+      <div class="video-container">
+        <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+      </div>
+
+      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung:</strong> ${m.overview || "Chưa có nội dung tóm tắt bằng tiếng Việt."}</p>
+    `;
+  } catch (error) {
+    console.error("Lỗi tải chi tiết phim:", error);
+  }
 }
 
-// ====== QUAY LẠI ======
-function back(){
+// ===== QUAY LẠI =====
+function backToList() {
   document.getElementById("detail").style.display = "none";
   document.getElementById("list").style.display = "grid";
+  document.getElementById("detail").innerHTML = ""; // Xóa hẳn iframe để phim dừng chạy ngầm khi thoát ra ngoài
 }
 
-// chạy
-showList();
+// Chạy ứng dụng
+loadMovies();
+
 </script>
 
 </body>
