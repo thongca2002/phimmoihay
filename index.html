@@ -137,6 +137,45 @@
       height: 38px;
     }
 
+    /* Thiết kế thanh phân trang */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .page-btn {
+      background: #222;
+      border: 1px solid #333;
+      color: #ccc;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #333;
+      color: white;
+    }
+
+    .page-btn.active {
+      background: var(--main-color);
+      color: white;
+      border-color: var(--main-color);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
     .detail {
       display: none;
       padding: 20px;
@@ -194,68 +233,76 @@
 
 <div id="mainSection">
   <div id="list" class="grid"></div>
+  <div id="paginationContainer" class="pagination"></div>
 </div>
 
 <div id="modDetail" class="detail"></div>
 
 <script>
 // =========================================================================
-// 🔑 MÃ API KEY CHÍNH CHỦ CỦA BẠN (ĐÃ KHỚP VỚI ẢNH CHỤP MÀN HÌNH)
+// 🔑 MÃ API KEY CHÍNH CHỦ CỦA BẠN (CẤU HÌNH HTTPS CHUẨN)
 // =========================================================================
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
+const BACKUP_KEY = "e21a85e683db8ca343d349f5cf3f1d76"; // Mã dự phòng tự động kích hoạt nếu mã trên quá tải
 // =========================================================================
 
-// 🛠️ ĐÃ SỬA THÀNH HTTPS ĐỂ TRÁNH BỊ TRÌNH DUYỆT CHẶN BẢO MẬT
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_PATH = "https://image.tmdb.org/t/p/w500";
-let currentType = "popular";
 
-// Hàm gọi API lấy dữ liệu phim từ TMDB về
-async function fetchMovies(endpoint, isSearch = false, query = "") {
-  let url = `${API_URL}/movie/${endpoint}?api_key=${TMDB_KEY}&language=vi-VN&page=1`;
-  if (isSearch) {
-    url = `${API_URL}/search/movie?api_key=${TMDB_KEY}&language=vi-VN&query=${encodeURIComponent(query)}&page=1`;
+let currentType = "popular";
+let currentPage = 1;
+let totalPages = 1;
+let isSearching = false;
+let currentQuery = "";
+
+// Hàm chính gọi dữ liệu phim từ TMDB
+async function fetchMovies(page = 1) {
+  currentPage = page;
+  let activeKey = TMDB_KEY;
+  let url = `${API_URL}/movie/${currentType}?api_key=${activeKey}&language=vi-VN&page=${currentPage}`;
+  
+  if (isSearching) {
+    url = `${API_URL}/search/movie?api_key=${activeKey}&language=vi-VN&query=${encodeURIComponent(currentQuery)}&page=${currentPage}`;
   }
   
   try {
     let res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Lỗi phản hồi từ server TMDB");
-    }
+    if (!res.ok) throw new Error();
     let data = await res.json();
+    totalPages = Math.min(data.total_pages, 500); // TMDB giới hạn tối đa 500 trang đối với API thông thường
     displayMovies(data.results);
+    setupPagination();
   } catch (err) {
-    console.error("Lỗi kết nối API:", err);
-    // Nếu mã của bạn bị lỗi kích hoạt, tự động chuyển sang mã dự phòng để web chạy luôn
-    if (err.message || err) {
-       backupFetch(endpoint, isSearch, query);
-    }
+    // Nếu lỗi kết nối mã chính, tự động chuyển sang luồng mã dự phòng công cộng luôn
+    backupFetch(currentPage);
   }
 }
 
-// Hàm dự phòng chạy mã API dùng chung nếu mã cá nhân chưa đồng bộ xong
-async function backupFetch(endpoint, isSearch = false, query = "") {
-  const BACKUP_KEY = "e21a85e683db8ca343d349f5cf3f1d76";
-  let url = `${API_URL}/movie/${endpoint}?api_key=${BACKUP_KEY}&language=vi-VN&page=1`;
-  if (isSearch) {
-    url = `${API_URL}/search/movie?api_key=${BACKUP_KEY}&language=vi-VN&query=${encodeURIComponent(query)}&page=1`;
+// Hàm xử lý bằng mã dự phòng công cộng giúp web không bao giờ sập
+async function backupFetch(page) {
+  let url = `${API_URL}/movie/${currentType}?api_key=${BACKUP_KEY}&language=vi-VN&page=${page}`;
+  if (isSearching) {
+    url = `${API_URL}/search/movie?api_key=${BACKUP_KEY}&language=vi-VN&query=${encodeURIComponent(currentQuery)}&page=${page}`;
   }
   try {
     let res = await fetch(url);
     let data = await res.json();
+    totalPages = Math.min(data.total_pages, 500);
     displayMovies(data.results);
+    setupPagination();
   } catch(e) {
-    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>Lỗi kết nối hệ thống phim.</p>";
+    document.getElementById("list").innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>Lỗi kết nối hệ thống dữ liệu phim.</p>";
   }
 }
 
-// Hàm render danh sách phim lên giao diện
+// Hàm hiển thị danh sách phim ra màn hình công cộng
 function displayMovies(movies) {
   let listDiv = document.getElementById("list");
   let html = "";
 
   if (!movies || movies.length === 0) {
     listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào phù hợp.</p>";
+    document.getElementById("paginationContainer").innerHTML = "";
     return;
   }
 
@@ -269,32 +316,78 @@ function displayMovies(movies) {
     `;
   });
   listDiv.innerHTML = html;
+  window.scrollTo(0, 0); // Tự động cuộn lên đầu trang sau khi chuyển trang phim
 }
 
-// Hàm chuyển đổi tab danh mục
+// Hàm tạo các nút bấm số trang thông minh (Trang trước, 1, 2, 3..., Trang sau)
+function setupPagination() {
+  let pagDiv = document.getElementById("paginationContainer");
+  if (totalPages <= 1) {
+    pagDiv.innerHTML = "";
+    return;
+  }
+
+  let html = "";
+  
+  // Nút "Trang trước"
+  html += `<button class="page-btn" ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Trang trước</button>`;
+
+  // Thuật toán hiển thị giới hạn các nút số (chỉ hiện xung quanh trang hiện tại)
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, currentPage + 2);
+
+  if (startPage > 1) {
+    html += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+    if (startPage > 2) html += `<span style="color:#aaa; padding:5px;">...</span>`;
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    html += `<button class="page-btn ${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) html += `<span style="color:#aaa; padding:5px;">...</span>`;
+    html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+  }
+
+  // Nút "Trang sau"
+  html += `<button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Trang sau</button>`;
+
+  pagDiv.innerHTML = html;
+}
+
+// Hàm xử lý sự kiện bấm chuyển số trang
+function changePage(page) {
+  if (page < 1 || page > totalPages) return;
+  fetchMovies(page);
+}
+
+// Hàm chuyển đổi danh mục phim (Popular, Now Playing, Top Rated)
 function switchCategory(type, element) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   element.classList.add('active');
   document.getElementById("searchInput").value = ""; 
   currentType = type;
+  isSearching = false;
   backToList();
-  fetchMovies(type);
+  fetchMovies(1);
 }
 
-// Hàm tìm kiếm phim toàn hệ thống
+// Hàm tìm kiếm phim trực tuyến
 function searchMovies() {
   let query = document.getElementById("searchInput").value.trim();
   if (query === "") return;
   
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  currentQuery = query;
+  isSearching = true;
   backToList();
-  fetchMovies("search", true, query);
+  fetchMovies(1);
 }
 
-// Hàm phát video dựa vào ID phim TMDB kết hợp server vidsrc.me tự động
+// Hàm xử lý mở chi tiết phim và phát qua trình phát tự động vidsrc
 function openMovie(id) {
-  // Lấy API key đang chạy thực tế
-  let activeKey = document.getElementById("list").innerHTML.includes("Lỗi") ? "e21a85e683db8ca343d349f5cf3f1d76" : TMDB_KEY;
+  let activeKey = document.getElementById("list").innerHTML.includes("Lỗi") ? BACKUP_KEY : TMDB_KEY;
   
   fetch(`${API_URL}/movie/${id}?api_key=${activeKey}&language=vi-VN`)
     .then(res => res.json())
@@ -316,7 +409,6 @@ function openMovie(id) {
       `;
     })
     .catch(() => {
-      // Nếu lỗi key thì cố chạy bằng key dự phòng để mở phim
       let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
       document.getElementById("modDetail").innerHTML = `
         <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
@@ -335,14 +427,14 @@ function backToList() {
   document.getElementById("modDetail").innerHTML = ""; 
 }
 
-// Hàm về trang chủ
+// Hàm quay lại trang chủ mặc định ban đầu
 function goHome() {
   document.getElementById("searchInput").value = "";
   switchCategory('popular', document.querySelector('.tab-btn'));
 }
 
-// Chạy ứng dụng, tự động tải danh sách phim phổ biến trước tiên
-fetchMovies(currentType);
+// Tự động khởi chạy hệ thống, lấy danh mục đầu tiên ở trang số 1
+fetchMovies(1);
 </script>
 
 </body>
