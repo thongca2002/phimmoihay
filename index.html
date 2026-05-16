@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phim Mới</title>
+
+<title>PHIM MỚI</title>
 
 <style>
-body{
+
+*{
 margin:0;
-background:#0f0f0f;
-color:white;
-font-family:Arial;
+padding:0;
+box-sizing:border-box;
 }
+
+body{
+background:#0f0f0f;
+font-family:Arial;
+color:white;
+}
+
+/* HEADER */
 
 header{
 background:#111;
@@ -19,45 +29,86 @@ padding:20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+position:sticky;
+top:0;
+z-index:1000;
 }
 
 .logo{
-font-size:30px;
+font-size:40px;
 font-weight:bold;
 color:red;
 }
 
-nav a{
-color:white;
-margin:10px;
-text-decoration:none;
-}
-
-.banner{
-height:300px;
-background:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200') center/cover;
+nav{
 display:flex;
-align-items:center;
-justify-content:center;
-font-size:40px;
-font-weight:bold;
-}
-
-.movies{
-padding:20px;
-}
-
-.movie-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
 gap:20px;
 }
 
+nav a{
+color:white;
+text-decoration:none;
+font-size:18px;
+transition:0.3s;
+}
+
+nav a:hover{
+color:red;
+}
+
+/* BANNER */
+
+.banner{
+height:400px;
+background:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1400') center/cover;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+}
+
+.banner-content{
+background:rgba(0,0,0,0.6);
+padding:30px;
+border-radius:15px;
+}
+
+.banner h1{
+font-size:55px;
+margin-bottom:10px;
+}
+
+.banner p{
+font-size:20px;
+}
+
+/* SECTION */
+
+.movies{
+padding:30px;
+}
+
+.movies h2{
+margin-bottom:25px;
+font-size:35px;
+}
+
+/* GRID */
+
+.movie-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:25px;
+}
+
+/* CARD */
+
 .movie{
 background:#1b1b1b;
-border-radius:10px;
+border-radius:15px;
 overflow:hidden;
 transition:0.3s;
+box-shadow:0 0 10px rgba(0,0,0,0.5);
 }
 
 .movie:hover{
@@ -66,56 +117,130 @@ transform:scale(1.05);
 
 .movie img{
 width:100%;
-height:220px;
+height:300px;
 object-fit:cover;
+display:block;
 }
 
 .movie h3{
-padding:10px;
+padding:15px;
+font-size:18px;
+text-align:center;
+}
+
+/* FOOTER */
+
+footer{
+background:#111;
+padding:25px;
+text-align:center;
+margin-top:40px;
+color:#aaa;
+}
+
+/* LOADING */
+
+.loading{
+text-align:center;
+font-size:25px;
+padding:40px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+header{
+flex-direction:column;
+gap:15px;
+}
+
+.logo{
+font-size:32px;
+}
+
+nav{
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.banner{
+height:300px;
+}
+
+.banner h1{
+font-size:35px;
+}
+
+.banner p{
 font-size:16px;
 }
 
-footer{
-padding:20px;
-text-align:center;
-background:#111;
-margin-top:30px;
 }
+
 </style>
 
 </head>
+
 <body>
 
 <header>
+
 <div class="logo">PHIM MỚI</div>
 
 <nav>
-<a href="#">Trang chủ</a>
-<a href="#">Phim lẻ</a>
-<a href="#">Phim bộ</a>
-<a href="#">Anime</a>
+<a href="#home">Trang chủ</a>
+<a href="#movie-list">Phim lẻ</a>
+<a href="#movie-list">Phim bộ</a>
+<a href="#movie-list">Anime</a>
 </nav>
+
 </header>
 
-<div class="banner">
-Kho phim bản quyền
+<!-- BANNER -->
+
+<div class="banner" id="home">
+
+<div class="banner-content">
+
+<h1>Kho phim bản quyền</h1>
+
+<p>Xem phim mới cực nhanh và đẹp</p>
+
 </div>
+
+</div>
+
+<!-- MOVIES -->
 
 <section class="movies">
 
-<h2>Phim nổi bật</h2>
+<h2>Phim mới cập nhật</h2>
+
+<div class="loading" id="loading">
+Đang tải phim...
+</div>
 
 <div class="movie-grid" id="movie-list">
 </div>
 
 </section>
 
+<!-- FOOTER -->
+
 <footer>
+
 © 2026 PHIM MỚI
+
 </footer>
+
+<!-- API -->
+
 <script>
 
 async function loadMovies(){
+
+try{
 
 const url = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1";
 
@@ -127,17 +252,25 @@ const movies = data.items;
 
 const movieList = document.getElementById("movie-list");
 
+document.getElementById("loading").style.display = "none";
+
 movies.forEach(movie => {
 
-const poster = movie.thumb_url;
+const poster = "https://img.ophim.live/uploads/movies/" + movie.thumb_url;
 
 const name = movie.name;
+
+const slug = movie.slug;
 
 movieList.innerHTML += `
 
 <div class="movie">
 
-<img src="${poster}">
+<a href="https://ophim1.com/phim/${slug}" target="_blank">
+
+<img src="${poster}" alt="${name}">
+
+</a>
 
 <h3>${name}</h3>
 
@@ -149,8 +282,19 @@ movieList.innerHTML += `
 
 }
 
+catch(error){
+
+document.getElementById("loading").innerHTML = "Không tải được phim 😢";
+
+console.log(error);
+
+}
+
+}
+
 loadMovies();
 
 </script>
+
 </body>
 </html>
