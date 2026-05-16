@@ -6,7 +6,7 @@
   
   <meta name="google-site-verification" content="_qvRq2uxGuWnTbVkf-P-UYKSRb_qnPltxTEA6by4Gfk" />
   
-  <title>PHIM MỚI - Giao diện Cinema Sang Trọng</title>
+  <title>Phim mới phim online mỗi ngày</title>
   
   <style>
     /* ==========================================================
@@ -30,7 +30,7 @@
     /* Thanh mẹo nhỏ đầu trang - Làm gọn lại */
     .ad-notice {
       background: linear-gradient(90deg, #1a237e, #311b92);
-      color: #rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.8);
       text-align: center;
       padding: 6px 10px;
       font-size: 12px;
@@ -348,26 +348,19 @@
 <div id="modDetail" class="detail"></div>
 
 <script>
-// =========================================================================
-// 🔑 THÔNG TIN API KEY HỆ THỐNG
-// =========================================================================
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_PATH = "https://image.tmdb.org/t/p/w500";
 
-// =========================================================================
-// 🎬 KHO PHIM DO BẠN TỰ UP (ĐÃ ĐỒNG BỘ CHÍNH XÁC LINK STREAMTAPE)
-// =========================================================================
 const MY_MOVIES_DATA = [
   {
     id: "my_1",
     title: "Phú Nhân Đại Quân Thế Kỷ 21",
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500", // Bạn có thể thay link ảnh đại diện khác nếu muốn
-    videoUrl: "https://streamtape.com/e/gP6r4y4qYPiqKoo/", // Link nhúng Streamtape đã đổi /v/ thành /e/
+    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500", 
+    videoUrl: "https://streamtape.com/e/gP6r4y4qYPiqKoo/", 
     overview: "Bộ phim tâm lý, tình cảm đặc sắc do bạn tải lên và quản lý trực tiếp trên hệ thống."
   }
 ];
-// =========================================================================
 
 let currentType = "popular";
 let currentPage = 1;
@@ -428,7 +421,7 @@ function displayMovies(movies, isLocal) {
     }
   });
   listDiv.innerHTML = html;
-  window.scrollTo(0, 0); // Tự động cuộn lên đầu khi chuyển trang
+  window.scrollTo(0, 0); 
 }
 
 function openApiMovie(id) {
