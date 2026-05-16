@@ -18,7 +18,7 @@
       color: white;
     }
 
-    /* Thanh thông báo nhắc nhở chặn quảng cáo */
+    /* Thanh thông báo nhắc nhở chặn quảng cáo cho người xem */
     .ad-notice {
       background: #311b92;
       color: #fff;
@@ -181,7 +181,7 @@
 <header>
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm tên phim...">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim trực tuyến...">
     <button onclick="searchMovies()">Tìm Kiếm</button>
   </div>
 </header>
@@ -200,16 +200,16 @@
 
 <script>
 // =========================================================================
-// 🔑 ĐIỀN MÃ API TMDB CỦA BẠN VÀO ĐÂY
+// 🔑 MÃ API KEY CHUẨN CỦA BẠN ĐÃ ĐƯỢC TÍCH HỢP TẠI ĐÂY
 // =========================================================================
-const TMDB_KEY = "e21a85e683db8ca343d349f5cf3f1d76"; // Dán mã API cũ của bạn vào giữa hai dấu ngoặc kép này
+const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 // =========================================================================
 
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_PATH = "https://image.tmdb.org/t/p/w500";
 let currentType = "popular";
 
-// Hàm lấy dữ liệu phim từ TMDB về
+// Hàm gọi API lấy dữ liệu phim từ TMDB về
 async function fetchMovies(endpoint, isSearch = false, query = "") {
   let url = `${API_URL}/movie/${endpoint}?api_key=${TMDB_KEY}&language=vi-VN&page=1`;
   if (isSearch) {
@@ -221,22 +221,21 @@ async function fetchMovies(endpoint, isSearch = false, query = "") {
     let data = await res.json();
     displayMovies(data.results);
   } catch (err) {
-    console.error("Lỗi lấy dữ liệu phim:", err);
+    console.error("Lỗi kết nối API:", err);
   }
 }
 
-// Hàm hiển thị danh sách phim ra màn hình
+// Hàm render danh sách phim lên giao diện
 function displayMovies(movies) {
   let listDiv = document.getElementById("list");
   let html = "";
 
   if (!movies || movies.length === 0) {
-    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào.</p>";
+    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào phù hợp.</p>";
     return;
   }
 
   movies.forEach(m => {
-    // Nếu phim không có ảnh poster thì dùng ảnh mặc định đen
     let posterUrl = m.poster_path ? (IMG_PATH + m.poster_path) : "https://via.placeholder.com/500x750?text=No+Image";
     html += `
       <div class="card" onclick="openMovie(${m.id})">
@@ -248,7 +247,7 @@ function displayMovies(movies) {
   listDiv.innerHTML = html;
 }
 
-// Hàm chuyển danh mục phim khi bấm Tab
+// Hàm chuyển đổi tab danh mục
 function switchCategory(type, element) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   element.classList.add('active');
@@ -258,7 +257,7 @@ function switchCategory(type, element) {
   fetchMovies(type);
 }
 
-// Hàm tìm kiếm phim trực tuyến
+// Hàm tìm kiếm phim toàn hệ thống
 function searchMovies() {
   let query = document.getElementById("searchInput").value.trim();
   if (query === "") return;
@@ -268,9 +267,8 @@ function searchMovies() {
   fetchMovies("search", true, query);
 }
 
-// Hàm mở chi tiết phim và tự động nhúng link phát vidsrc
+// Hàm phát video dựa vào ID phim TMDB kết hợp server vidsrc.me tự động
 function openMovie(id) {
-  // Lấy thông tin chi tiết phim để hiện nội dung tóm tắt tiếng Việt
   fetch(`${API_URL}/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`)
     .then(res => res.json())
     .then(m => {
@@ -278,7 +276,6 @@ function openMovie(id) {
       document.getElementById("tabContainer").style.display = "none"; 
       document.getElementById("modDetail").style.display = "block";
 
-      // Sử dụng hệ thống tự động phát vidsrc.me dựa trên ID phim của TMDB
       let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
 
       document.getElementById("modDetail").innerHTML = `
@@ -288,12 +285,12 @@ function openMovie(id) {
         <div class="video-container">
           <iframe src="${embedUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
         </div>
-        <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Đang cập nhật nội dung tiếng Việt..."}</p>
+        <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Đang cập nhật nội dung tóm tắt tiếng Việt cho bộ phim này..."}</p>
       `;
     });
 }
 
-// Hàm quay lại danh sách
+// Hàm quay về danh sách chính
 function backToList() {
   document.getElementById("modDetail").style.display = "none";
   document.getElementById("mainSection").style.display = "block";
@@ -307,7 +304,7 @@ function goHome() {
   switchCategory('popular', document.querySelector('.tab-btn'));
 }
 
-// Khởi chạy lấy danh mục phim phổ biến đầu tiên
+// Chạy ứng dụng, tự động tải danh sách phim phổ biến trước tiên
 fetchMovies(currentType);
 </script>
 
