@@ -13,10 +13,10 @@
        🖌️ STYLE GIAO DIỆN MỚI - HIỆN ĐẠI & SANG TRỌNG
     ========================================================== */
     :root {
-      --main-color: #ff000d; /* Màu đỏ neon nổi bật hơn */
-      --bg-color: #050505;  /* Đen sâu hơn */
+      --main-color: #ff000d; 
+      --bg-color: #050505;  
       --card-bg: #111111;
-      --glass: rgba(255, 255, 255, 0.05); /* Hiệu ứng kính mờ */
+      --glass: rgba(255, 255, 255, 0.05); 
     }
 
     body {
@@ -25,9 +25,10 @@
       background: var(--bg-color);
       color: white;
       -webkit-font-smoothing: antialiased;
+      transition: background 0.5s ease;
     }
 
-    /* Thanh mẹo nhỏ đầu trang - Làm gọn lại */
+    /* Thanh mẹo nhỏ đầu trang */
     .ad-notice {
       background: linear-gradient(90deg, #1a237e, #311b92);
       color: rgba(255,255,255,0.8);
@@ -36,12 +37,13 @@
       font-size: 12px;
       font-weight: 500;
       letter-spacing: 0.5px;
+      transition: opacity 0.5s;
     }
 
-    /* Header - Thiết kế lại tối giản, kính mờ */
+    /* Header - Kính mờ */
     header {
       background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px); /* Kính mờ */
+      backdrop-filter: blur(10px); 
       padding: 15px 4%;
       display: flex;
       flex-wrap: wrap;
@@ -51,6 +53,7 @@
       top: 0;
       z-index: 100;
       border-bottom: 1px solid rgba(255,0,0,0.2);
+      transition: opacity 0.5s, visibility 0.5s;
     }
 
     .logo {
@@ -64,7 +67,7 @@
       text-shadow: 0 0 10px rgba(255,0,0,0.5);
     }
 
-    /* Search Box - Thiết kế lại bo mượt */
+    /* Search Box */
     .search-box {
       display: flex;
       gap: 0;
@@ -102,7 +105,7 @@
       letter-spacing: 1px;
     }
 
-    /* Navigation Tabs - Glassmorphism, bo góc Neon */
+    /* Navigation Tabs */
     .tabs {
       display: flex;
       justify-content: center;
@@ -122,7 +125,7 @@
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      border-radius: 50px; /* Bo góc tròn mượt */
+      border-radius: 50px; 
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -140,7 +143,6 @@
       box-shadow: 0 0 15px rgba(255,0,0,0.5);
     }
     
-    /* Tab đặc biệt của bạn */
     .tab-btn-special {
       background: linear-gradient(45deg, #2e7d32, #66bb6a) !important;
       border-color: transparent !important;
@@ -151,7 +153,7 @@
       box-shadow: 0 0 15px rgba(76,175,80,0.6) !important;
     }
 
-    /* Grid - Tối ưu khoảng cách */
+    /* Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -159,10 +161,10 @@
       padding: 30px 4%;
     }
 
-    /* Card - Thiết kế lại Premium */
+    /* Card */
     .card {
       background: var(--card-bg);
-      border-radius: 12px; /* Bo góc nhiều hơn */
+      border-radius: 12px; 
       overflow: hidden;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -176,7 +178,6 @@
       border-color: rgba(255,0,0,0.3);
     }
 
-    /* Hiệu ứng bóng mờ nhẹ bên dưới ảnh */
     .card::after {
       content: '';
       position: absolute;
@@ -187,7 +188,7 @@
 
     .card img {
       width: 100%;
-      height: 270px; /* Tăng chiều cao ảnh */
+      height: 270px; 
       object-fit: cover;
       transition: all 0.3s;
     }
@@ -196,7 +197,6 @@
       filter: brightness(1.1);
     }
 
-    /* Tên phim - To, rõ, nằm đè lên bóng mờ */
     .card p {
       position: absolute;
       bottom: 0;
@@ -216,7 +216,7 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
-    /* Phân trang - Thiết kế tối giản */
+    /* Phân trang */
     .pagination {
       display: flex;
       justify-content: center;
@@ -256,12 +256,14 @@
       cursor: not-allowed;
     }
 
-    /* Chi tiết phim - Giao diện Cinema */
+    /* Chi tiết phim */
     .detail {
       display: none;
       padding: 40px 4%;
       max-width: 1000px;
       margin: 0 auto;
+      position: relative;
+      z-index: 101; /* Đảm bảo luôn nằm trên lớp phủ tắt đèn */
     }
 
     .video-container {
@@ -271,9 +273,10 @@
       overflow: hidden;
       margin-top: 25px;
       background: #000;
-      border-radius: 16px; /* Bo góc trình phát */
+      border-radius: 16px; 
       box-shadow: 0 15px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255,0,0,0.1);
       border: 1px solid rgba(255,255,255,0.05);
+      transition: box-shadow 0.5s;
     }
 
     .video-container iframe {
@@ -286,15 +289,21 @@
       font-weight: 900;
       margin-bottom: 10px;
       text-shadow: 0 0 15px rgba(255,255,255,0.2);
+      transition: opacity 0.5s;
     }
 
-    .btn-back {
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .btn-back, .btn-light {
       background: var(--glass);
       border: 1px solid rgba(255,255,255,0.1);
       padding: 12px 24px;
       color: white;
       cursor: pointer;
-      margin-bottom: 25px;
       border-radius: 50px;
       font-weight: 700;
       text-transform: uppercase;
@@ -306,6 +315,9 @@
       background: rgba(255,255,255,0.15); 
       transform: translateX(-5px);
     }
+    .btn-light:hover {
+      background: rgba(255,255,255,0.15);
+    }
     
     .movie-overview {
       margin-top: 30px;
@@ -316,16 +328,50 @@
       padding: 20px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.03);
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+
+    /* ==========================================================
+       🕶️ LỚP PHỦ VÀ STYLE CHO TÍNH NĂNG TẮT ĐÈN
+    ========================================================== */
+    .dark-mode-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95); /* Tối đen 95% */
+      z-index: 99;
+      pointer-events: none;
+    }
+
+    /* Khi bật chế độ tắt đèn, ẩn các thành phần không cần thiết */
+    body.lights-off {
+      background: #000000;
+    }
+    body.lights-off header {
+      opacity: 0;
+      visibility: hidden;
+    }
+    body.lights-off .ad-notice {
+      opacity: 0;
+    }
+    body.lights-off .detail h2,
+    body.lights-off .movie-overview {
+      opacity: 0.1; /* Làm mờ chữ đi để tập trung xem video */
+    }
+    body.lights-off .video-container {
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1); /* Tạo viền sáng nhẹ quanh video */
     }
   </style>
 </head>
 <body>
 
-<div class="ad-notice">
+<div class="dark-mode-overlay" id="lightOverlay"></div>
+
+<div class="ad-notice" id="adNotice">
   💡 Mẹo: Nên sử dụng Brave, Cốc Cốc hoặc cài uBlock Origin để xem phim sạch bóng quảng cáo rác!
 </div>
 
-<header>
+<header id="webHeader">
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Tìm tên phim...">
@@ -367,6 +413,7 @@ let currentPage = 1;
 let totalPages = 1;
 let isSearching = false;
 let currentQuery = "";
+let isLightsOff = false;
 
 async function fetchMovies(page = 1) {
   currentPage = page;
@@ -443,7 +490,10 @@ function openLocalMovie(id) {
 
 function renderDetail(title, videoUrl, overview) {
   document.getElementById("modDetail").innerHTML = `
-    <button class="btn-back" onclick="backToList()">⬅ Quay lại</button>
+    <div class="action-bar">
+      <button class="btn-back" onclick="backToList()">⬅ Quay lại</button>
+      <button class="btn-light" id="lightBtn" onclick="toggleLights()">💡 Tắt Đèn</button>
+    </div>
     <h2>${title}</h2>
     <div class="video-container">
       <iframe src="${videoUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
@@ -455,12 +505,36 @@ function renderDetail(title, videoUrl, overview) {
   `;
 }
 
+// Hàm xử lý Bật/Tắt đèn
+function toggleLights() {
+  isLightsOff = !isLightsOff;
+  let body = document.body;
+  let overlay = document.getElementById("lightOverlay");
+  let btn = document.getElementById("lightBtn");
+
+  if (isLightsOff) {
+    body.classList.add("lights-off");
+    overlay.style.display = "block";
+    btn.innerHTML = "🌟 Bật Đèn";
+    btn.style.background = "#ffffff";
+    btn.style.color = "#000000";
+  } else {
+    body.classList.remove("lights-off");
+    overlay.style.display = "none";
+    btn.innerHTML = "💡 Tắt Đèn";
+    btn.style.background = "var(--glass)";
+    btn.style.color = "#ffffff";
+  }
+}
+
 function toggleDetailView(showDetail) {
   if (showDetail) {
     document.getElementById("mainSection").style.display = "none";
     document.getElementById("tabContainer").style.display = "none"; 
     document.getElementById("modDetail").style.display = "block";
   } else {
+    // Nếu đang tắt đèn mà bấm quay lại thì phải bật đèn lên trước
+    if (isLightsOff) toggleLights();
     document.getElementById("modDetail").style.display = "none";
     document.getElementById("mainSection").style.display = "block";
     document.getElementById("tabContainer").style.display = "flex";
