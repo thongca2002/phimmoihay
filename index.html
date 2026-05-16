@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phim Mới Fix</title>
+  <title>Phim Mới Fix - Dùng API Key v3</title>
   <style>
     body {
       margin: 0;
@@ -59,7 +59,6 @@
       margin: 0 auto;
     }
 
-    /* Khung chứa video tỉ lệ 16:9 chuẩn */
     .video-container {
       position: relative;
       padding-bottom: 56.25%; 
@@ -100,32 +99,23 @@
 <div id="detail" class="detail"></div>
 
 <script>
-// Đã thay mã Access Token v4 cá nhân của bạn vào đây
-const TMDB_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMjFhODVlNjM0M2Q0OTVmN2U4MmVkZmZjM2YyMWQ2NyIsIm5iZiI6MTc3ODc2ODExMi4zNzc5OTk4LCJzdWIiOiI2YTA1ZDhmMDE3MDZkMjkxZjA1ODA1NWYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.ZD0DXp2qLkYSTQD91KhRMAV19CS6ScNaH--IAodQeM0"; 
-
+// Đã điền sẵn khóa API Key v3 của bạn ở đây
+const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 const IMG = "https://image.tmdb.org/t/p/w500";
-
-// Cấu hình thuộc tính xác thực Header bắt buộc
-const apiOptions = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization: `Bearer ${TMDB_TOKEN}`
-  }
-};
 
 // ===== LOAD PHIM MỚI =====
 async function loadMovies(){
   try {
-    let res = await fetch('https://api.themoviedb.org/3/movie/now_playing?language=vi-VN&page=1', apiOptions);
+    // Khi dùng API v3, ta truyền trực tiếp vào URL dạng ?api_key=...
+    let res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_KEY}&language=vi-VN&page=1`);
     let data = await res.json();
     show(data.results);
   } catch (error) {
-    console.error("Lỗi tải danh sách phim:", error);
+    console.error("Lỗi tải danh sách:", error);
   }
 }
 
-// ===== HIỂN THỊ DANH SÁCH =====
+// ===== HIỂN THỊ =====
 function show(movies){
   let html = "";
   movies.forEach(m => {
@@ -140,16 +130,16 @@ function show(movies){
   document.getElementById("list").innerHTML = html;
 }
 
-// ===== CHI TIẾT & PHÁT VIDEO =====
+// ===== TRANG XEM PHIM =====
 async function detail(id){
   try {
-    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?language=vi-VN`, apiOptions);
+    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`);
     let m = await res.json();
 
-    document.getElementById("list").style.display = "none";
+    document.getElementById("list").style.style.display = "none";
     document.getElementById("detail").style.display = "block";
 
-    // Nguồn nhúng tự động tìm phim theo ID TMDB
+    // Nhúng link vidsrc để lấy video phim tự động từ ID
     let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
 
     document.getElementById("detail").innerHTML = `
@@ -160,10 +150,10 @@ async function detail(id){
         <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
       </div>
 
-      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung:</strong> ${m.overview || "Chưa có nội dung tóm tắt bằng tiếng Việt."}</p>
+      <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung:</strong> ${m.overview || "Chưa có nội dung tóm tắt tiếng Việt."}</p>
     `;
   } catch (error) {
-    console.error("Lỗi tải chi tiết phim:", error);
+    console.error("Lỗi tải chi tiết:", error);
   }
 }
 
@@ -171,7 +161,7 @@ async function detail(id){
 function backToList() {
   document.getElementById("detail").style.display = "none";
   document.getElementById("list").style.display = "grid";
-  document.getElementById("detail").innerHTML = ""; // Xóa hẳn iframe để phim dừng chạy ngầm khi thoát ra ngoài
+  document.getElementById("detail").innerHTML = ""; // Tắt hẳn phim cũ để tránh âm thanh chạy ngầm
 }
 
 // Chạy ứng dụng
