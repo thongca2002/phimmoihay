@@ -127,7 +127,6 @@
       height: 38px;
     }
 
-    /* Thanh phân trang có thêm ô nhảy trang nhanh */
     .pagination {
       display: flex;
       justify-content: center;
@@ -157,7 +156,6 @@
       font-weight: bold;
     }
 
-    /* Giao diện xem chi tiết phim */
     .detail {
       display: none;
       padding: 20px;
@@ -233,18 +231,15 @@ let currentGenre = "";
 let currentPage = 1;
 let isSearching = false;
 
-// ===== TẢI DỮ LIỆU TOÀN BỘ KHO PHIM =====
+// ===== TẢI DỮ LIỆU =====
 async function loadMovies(){
   try {
     let url = "";
     let query = document.getElementById("searchInput").value.trim();
 
     if (isSearching && query !== "") {
-      // Khi tìm kiếm: hiển thị kết quả liên quan từ cũ đến mới theo trang
       url = `https://api.themoviedb.org/3/search/${currentType}?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&language=vi-VN&page=${currentPage}`;
     } else {
-      // Khi chọn danh mục: Dùng lệnh 'discover' kèm sắp xếp popularity.desc 
-      // Giúp liệt kê toàn bộ kho phim từ hot nhất kéo dài mãi về các phim cũ, phim kinh điển ở các trang sau
       let genreParam = currentGenre !== "" ? `&with_genres=${currentGenre}` : "";
       url = `https://api.themoviedb.org/3/discover/${currentType}?api_key=${TMDB_KEY}${genreParam}&language=vi-VN&sort_by=popularity.desc&page=${currentPage}`;
     }
@@ -254,11 +249,9 @@ async function loadMovies(){
     
     show(data.results, currentType === 'tv');
     
-    // Quản lý hệ thống chuyển trang
     document.getElementById("pageNumber").innerText = `Trang ${currentPage} / ${data.total_pages || 1}`;
     document.getElementById("prevBtn").disabled = currentPage === 1;
     
-    // TMDB giới hạn tối đa lấy dữ liệu tới trang số 500 cho lệnh discover/search công khai
     let maxPages = Math.min(data.total_pages || 1, 500); 
     document.getElementById("nextBtn").disabled = currentPage >= maxPages;
   } catch (error) {
@@ -266,7 +259,7 @@ async function loadMovies(){
   }
 }
 
-// ===== HIỂN THỊ DANH SÁCH PHIM =====
+// ===== HIỂN THỊ =====
 function show(movies, isTVSeries){
   let html = "";
   if (!movies || movies.length === 0) {
@@ -302,7 +295,7 @@ function searchMovies() {
   loadMovies();
 }
 
-// ===== ĐỔI DANH MỤC KHÁM PHÁ =====
+// ===== ĐỔI DANH MỤC =====
 function switchCategory(type, category, genreId, buttonElement) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   buttonElement.classList.add('active');
@@ -317,14 +310,14 @@ function switchCategory(type, category, genreId, buttonElement) {
   loadMovies();
 }
 
-// ===== ĐIỀU HƯỚNG CHUYỂN TRANG MƯỢT =====
+// ===== CHUYỂN TRANG =====
 function changePage(direction) {
   currentPage += direction;
   window.scrollTo({top: 0, behavior: 'smooth'}); 
   loadMovies();
 }
 
-// ===== TRANG XEM VIDEO PHIM =====
+// ===== TRANG XEM PHIM CHI TIẾT =====
 async function detail(id, isTVSeries){
   try {
     let type = isTVSeries ? 'tv' : 'movie';
