@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phim Mới Fix - Dùng API Key v3</title>
+  <title>Trang Phim Tổng Hợp</title>
   <style>
     body {
       margin: 0;
@@ -16,15 +16,40 @@
       background: #e50914;
       padding: 15px;
       text-align: center;
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    /* Thanh chọn danh mục Phim */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #181818;
+      padding: 10px 0;
+      border-bottom: 1px solid #282828;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #aaa;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      color: #e50914;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 15px;
-      padding: 15px;
+      padding: 20px;
     }
 
     .card {
@@ -32,11 +57,12 @@
       border-radius: 10px;
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .card:hover {
       transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
     }
 
     .card img {
@@ -50,12 +76,17 @@
       font-size: 14px;
       font-weight: bold;
       text-align: center;
+      /* Giới hạn tên phim trong 2 dòng để giao diện đều nhau */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;  
+      overflow: hidden;
     }
 
     .detail {
       display: none;
       padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
     }
 
@@ -87,73 +118,107 @@
       border-radius: 5px;
       font-weight: bold;
     }
+    .btn:hover { background: #b80710; }
   </style>
 </head>
 
 <body>
 
-<header>🎬 PHIM MỚI CỦA TÔI</header>
+<header>🎬 PHIM MỚI MỖI NGÀY</header>
+
+<div class="tabs" id="tabContainer">
+  <button class="tab-btn active" onclick="switchCategory('movie/popular', this)">Phim Lẻ Hot</button>
+  <button class="tab-btn" onclick="switchCategory('tv/popular', this)">Phim Bộ (TV Show)</button>
+  <button class="tab-btn" onclick="switchCategory('movie/now_playing', this)">Phim Chiếu Rạp</button>
+</div>
 
 <div id="list" class="grid"></div>
 
 <div id="detail" class="detail"></div>
 
 <script>
-// Đã điền sẵn khóa API Key v3 của bạn ở đây
+// Giữ nguyên Khóa API Key v3 của bạn
 const TMDB_KEY = "e21a85e6343d495f7e82edffc3f21d67"; 
 const IMG = "https://image.tmdb.org/t/p/w500";
 
-// ===== LOAD PHIM MỚI =====
-async function loadMovies(){
+let currentEndpoint = "movie/popular"; // Mặc định khi vào trang sẽ tải phim lẻ hot
+
+// ===== TẢI DỮ LIỆU THEO DANH MỤC =====
+async function loadMovies(endpoint){
   try {
-    // Khi dùng API v3, ta truyền trực tiếp vào URL dạng ?api_key=...
-    let res = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_KEY}&language=vi-VN&page=1`);
+    let res = await fetch(`https://api.themoviedb.org/3/${endpoint}?api_key=${TMDB_KEY}&language=vi-VN&page=1`);
     let data = await res.json();
-    show(data.results);
+    
+    // Lưu ý: Phim bộ dùng trường 'name', phim lẻ dùng trường 'title'
+    show(data.results, endpoint.startsWith('tv'));
   } catch (error) {
-    console.error("Lỗi tải danh sách:", error);
+    console.error("Lỗi kết nối API:", error);
   }
 }
 
-// ===== HIỂN THỊ =====
-function show(movies){
+// ===== HIỂN THỊ DANH SÁCH RA MÀN HÌNH =====
+function show(movies, isTVSeries){
   let html = "";
   movies.forEach(m => {
     let poster = m.poster_path ? (IMG + m.poster_path) : 'https://placehold.co/500x750?text=No+Image';
+    let title = isTVSeries ? m.name : m.title; // Lấy đúng tên phim tùy thể loại
+    
+    // Truyền thêm cờ dữ liệu để biết khi nhấn vào là phim bộ hay phim lẻ
     html += `
-      <div class="card" onclick="detail(${m.id})">
+      <div class="card" onclick="detail(${m.id}, ${isTVSeries})">
         <img src="${poster}">
-        <p>${m.title}</p>
+        <p>${title}</p>
       </div>
     `;
   });
   document.getElementById("list").innerHTML = html;
 }
 
-// ===== TRANG XEM PHIM =====
-async function detail(id){
+// ===== CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB =====
+function switchCategory(endpoint, buttonElement) {
+  // Xóa class active ở nút cũ, thêm vào nút mới bấm
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  buttonElement.classList.add('active');
+  
+  // Reset lại giao diện danh sách
+  backToList();
+  currentEndpoint = endpoint;
+  loadMovies(endpoint);
+}
+
+// ===== CHI TIẾT & TRÌNH PHÁT VIDEO =====
+async function detail(id, isTVSeries){
   try {
-    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`);
+    // Xác định xem cần lấy thông tin chi tiết phim bộ (tv) hay phim lẻ (movie)
+    let type = isTVSeries ? 'tv' : 'movie';
+    let res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=vi-VN`);
     let m = await res.json();
 
-    document.getElementById("list").style.style.display = "none";
+    document.getElementById("list").style.display = "none";
+    document.getElementById("tabContainer").style.display = "none"; // Ẩn thanh tab khi đang xem phim
     document.getElementById("detail").style.display = "block";
 
-    // Nhúng link vidsrc để lấy video phim tự động từ ID
-    let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
+    let title = isTVSeries ? m.name : m.title;
+    
+    // Cấu hình đường dẫn nhúng tương ứng cho Phim lẻ (movie) hoặc Phim bộ (tv)
+    let embedUrl = isTVSeries 
+      ? `https://vidsrc.me/embed/tv?id=${id}&season=1&episode=1` // Mặc định tập 1 mùa 1 cho phim bộ
+      : `https://vidsrc.me/embed/movie/${id}`;
 
     document.getElementById("detail").innerHTML = `
       <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
-      <h2>${m.title}</h2>
+      <h2>${title}</h2>
       
       <div class="video-container">
         <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
       </div>
 
+      ${isTVSeries ? '<p style="color: #e50914; font-size: 14px; margin-top:10px;">💡 Đối với phim bộ, bạn có thể chọn tập/mùa trực tiếp bên trong trình phát video (Nút Select Episode).</p>' : ''}
+
       <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung:</strong> ${m.overview || "Chưa có nội dung tóm tắt tiếng Việt."}</p>
     `;
   } catch (error) {
-    console.error("Lỗi tải chi tiết:", error);
+    console.error("Lỗi tải phim:", error);
   }
 }
 
@@ -161,11 +226,12 @@ async function detail(id){
 function backToList() {
   document.getElementById("detail").style.display = "none";
   document.getElementById("list").style.display = "grid";
-  document.getElementById("detail").innerHTML = ""; // Tắt hẳn phim cũ để tránh âm thanh chạy ngầm
+  document.getElementById("tabContainer").style.display = "flex";
+  document.getElementById("detail").innerHTML = ""; // Xóa iframe cũ
 }
 
-// Chạy ứng dụng
-loadMovies();
+// Khởi chạy ứng dụng lần đầu tiên
+loadMovies(currentEndpoint);
 
 </script>
 
