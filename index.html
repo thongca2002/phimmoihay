@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PHIM MỚI - Kho Phim Của Riêng Tôi</title>
+  <title>PHIM MỚI - Hệ Thống Phim Tự Động</title>
   <style>
     :root {
       --main-color: #e50914; 
@@ -16,6 +16,16 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       background: var(--bg-color);
       color: white;
+    }
+
+    /* Thanh thông báo nhắc nhở chặn quảng cáo */
+    .ad-notice {
+      background: #311b92;
+      color: #fff;
+      text-align: center;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: bold;
     }
 
     header {
@@ -162,73 +172,75 @@
     .btn:hover { background: #b80710; }
   </style>
 </head>
-
 <body>
+
+<div class="ad-notice">
+  💡 Mẹo: Nên sử dụng trình duyệt Cốc Cốc hoặc cài AdGuard / uBlock để xem phim mượt mà, không bị nhảy quảng cáo rác!
+</div>
 
 <header>
   <div class="logo" onclick="goHome()">🎬 PHIM MỚI</div>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Tìm phim trong kho...">
+    <input type="text" id="searchInput" placeholder="Tìm tên phim...">
     <button onclick="searchMovies()">Tìm Kiếm</button>
   </div>
 </header>
 
 <div class="tabs" id="tabContainer">
-  <button class="tab-btn active" onclick="switchCategory('tat-ca', this)">Tất Cả Phim</button>
-  <button class="tab-btn" onclick="switchCategory('hanh-dong', this)">Hành Động</button>
-  <button class="tab-btn" onclick="switchCategory('kinh-di', this)">Kinh Dị</button>
-  <button class="tab-btn" onclick="switchCategory('hoat-hinh', this)">Hoạt Hình</button>
+  <button class="tab-btn active" onclick="switchCategory('popular', this)">Phim Phổ Biến</button>
+  <button class="tab-btn" onclick="switchCategory('now_playing', this)">Phim Đang Chiếu</button>
+  <button class="tab-btn" onclick="switchCategory('top_rated', this)">Phim Điểm Cao</button>
 </div>
 
 <div id="mainSection">
   <div id="list" class="grid"></div>
 </div>
 
-<div id="detail" class="detail"></div>
+<div id="modDetail" class="detail"></div>
 
 <script>
 // =========================================================================
-// 🛒 NƠI QUẢN LÝ KHO PHIM CỦA BẠN (TỰ THÊM PHIM Ở ĐÂY)
-// - Mỗi bộ phim nằm trong một cặp dấu ngoặc nhọn { } cách nhau bằng dấu phẩy
-// - Bạn có thể copy ảnh poster trên mạng dán vào mục poster
-// - Bạn dán link Google Drive hoặc Streamtape của bạn vào mục videoUrl
+// 🔑 ĐIỀN MÃ API TMDB CỦA BẠN VÀO ĐÂY
 // =========================================================================
-const KHO_PHIM = [
-  {
-    id: 1,
-    title: "Phim Mẫu Hành Động 1",
-    category: "hanh-dong",
-    poster: "https://image.tmdb.org/t/p/w500/or066Z26E9gYm67w6gT6mCgH8GZ.jpg",
-    videoUrl: "https://streamtape.com/e/xM4bY2O03yHqda/", // Thay bằng link phim của bạn
-    overview: "Đây là bộ phim hành động mẫu do chính bạn tải lên và quản lý."
-  },
-  {
-    id: 2,
-    title: "Phim Mẫu Kinh Dị 2",
-    category: "kinh-di",
-    poster: "https://image.tmdb.org/t/p/w500/b9Fiw79vI99YpFBby8v7mYIEgXv.jpg",
-    videoUrl: "https://drive.google.com/file/d/1XgO7pC7Iu0Z3nCWhG9WzT7aE_7V1S9rL/preview", // Ví dụ link nhúng Google Drive
-    overview: "Bộ phim kinh dị gay cấn được lưu trữ sạch sẽ, không có quảng cáo độc hại."
+const TMDB_KEY = "e21a85e683db8ca343d349f5cf3f1d76"; // Dán mã API cũ của bạn vào giữa hai dấu ngoặc kép này
+// =========================================================================
+
+const API_URL = "https://api.themoviedb.org/3";
+const IMG_PATH = "https://image.tmdb.org/t/p/w500";
+let currentType = "popular";
+
+// Hàm lấy dữ liệu phim từ TMDB về
+async function fetchMovies(endpoint, isSearch = false, query = "") {
+  let url = `${API_URL}/movie/${endpoint}?api_key=${TMDB_KEY}&language=vi-VN&page=1`;
+  if (isSearch) {
+    url = `${API_URL}/search/movie?api_key=${TMDB_KEY}&language=vi-VN&query=${encodeURIComponent(query)}&page=1`;
   }
-];
-// =========================================================================
+  
+  try {
+    let res = await fetch(url);
+    let data = await res.json();
+    displayMovies(data.results);
+  } catch (err) {
+    console.error("Lỗi lấy dữ liệu phim:", err);
+  }
+}
 
-let currentCategory = "tat-ca";
-
-// Hàm tải danh sách phim ra màn hình
-function loadMovies(moviesToRender) {
+// Hàm hiển thị danh sách phim ra màn hình
+function displayMovies(movies) {
   let listDiv = document.getElementById("list");
   let html = "";
 
-  if (!moviesToRender || moviesToRender.length === 0) {
-    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Chưa có phim nào trong mục này.</p>";
+  if (!movies || movies.length === 0) {
+    listDiv.innerHTML = "<p style='text-align:center; width:100%; color:#aaa; grid-column: 1/-1;'>Không tìm thấy bộ phim nào.</p>";
     return;
   }
 
-  moviesToRender.forEach(m => {
+  movies.forEach(m => {
+    // Nếu phim không có ảnh poster thì dùng ảnh mặc định đen
+    let posterUrl = m.poster_path ? (IMG_PATH + m.poster_path) : "https://via.placeholder.com/500x750?text=No+Image";
     html += `
-      <div class="card" onclick="openDetail(${m.id})">
-        <img src="${m.poster}" alt="${m.title}">
+      <div class="card" onclick="openMovie(${m.id})">
+        <img src="${posterUrl}" alt="${m.title}">
         <p>${m.title}</p>
       </div>
     `;
@@ -236,70 +248,67 @@ function loadMovies(moviesToRender) {
   listDiv.innerHTML = html;
 }
 
-// Hàm lọc phim khi bấm vào các nút Danh mục (Tabs)
-function switchCategory(category, buttonElement) {
+// Hàm chuyển danh mục phim khi bấm Tab
+function switchCategory(type, element) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  buttonElement.classList.add('active');
+  element.classList.add('active');
   document.getElementById("searchInput").value = ""; 
-  currentCategory = category;
+  currentType = type;
   backToList();
-
-  if (category === "tat-ca") {
-    loadMovies(KHO_PHIM);
-  } else {
-    let filtered = KHO_PHIM.filter(m => m.category === category);
-    loadMovies(filtered);
-  }
+  fetchMovies(type);
 }
 
-// Hàm tìm kiếm phim theo tên trong kho phim riêng
+// Hàm tìm kiếm phim trực tuyến
 function searchMovies() {
-  let query = document.getElementById("searchInput").value.trim().toLowerCase();
+  let query = document.getElementById("searchInput").value.trim();
   if (query === "") return;
   
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   backToList();
-
-  let result = KHO_PHIM.filter(m => m.title.toLowerCase().includes(query));
-  loadMovies(result);
+  fetchMovies("search", true, query);
 }
 
-// Hàm mở trang chi tiết và phát video phim
-function openDetail(id) {
-  let m = KHO_PHIM.find(movie => movie.id === id);
-  if (!m) return;
+// Hàm mở chi tiết phim và tự động nhúng link phát vidsrc
+function openMovie(id) {
+  // Lấy thông tin chi tiết phim để hiện nội dung tóm tắt tiếng Việt
+  fetch(`${API_URL}/movie/${id}?api_key=${TMDB_KEY}&language=vi-VN`)
+    .then(res => res.json())
+    .then(m => {
+      document.getElementById("mainSection").style.display = "none";
+      document.getElementById("tabContainer").style.display = "none"; 
+      document.getElementById("modDetail").style.display = "block";
 
-  document.getElementById("mainSection").style.display = "none";
-  document.getElementById("tabContainer").style.display = "none"; 
-  document.getElementById("detail").style.display = "block";
+      // Sử dụng hệ thống tự động phát vidsrc.me dựa trên ID phim của TMDB
+      let embedUrl = `https://vidsrc.me/embed/movie/${id}`;
 
-  document.getElementById("detail").innerHTML = `
-    <button class="btn" onclick="backToList()">⬅ Quay lại kho phim</button>
-    <h2>${m.title}</h2>
-    
-    <div class="video-container">
-      <iframe src="${m.videoUrl}" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview}</p>
-  `;
+      document.getElementById("modDetail").innerHTML = `
+        <button class="btn" onclick="backToList()">⬅ Quay lại danh sách</button>
+        <h2>${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'N/A'})</h2>
+        
+        <div class="video-container">
+          <iframe src="${embedUrl}" frameborder="0" allowfullscreen scrolling="no"></iframe>
+        </div>
+        <p style="margin-top:20px; color:#aaa; line-height:1.6;"><strong>Nội dung phim:</strong> ${m.overview || "Đang cập nhật nội dung tiếng Việt..."}</p>
+      `;
+    });
 }
 
-// Hàm quay lại danh sách chính
+// Hàm quay lại danh sách
 function backToList() {
-  document.getElementById("detail").style.display = "none";
+  document.getElementById("modDetail").style.display = "none";
   document.getElementById("mainSection").style.display = "block";
   document.getElementById("tabContainer").style.display = "flex";
-  document.getElementById("detail").innerHTML = ""; 
+  document.getElementById("modDetail").innerHTML = ""; 
 }
 
-// Về trang chủ
+// Hàm về trang chủ
 function goHome() {
   document.getElementById("searchInput").value = "";
-  switchCategory('tat-ca', document.querySelector('.tab-btn'));
+  switchCategory('popular', document.querySelector('.tab-btn'));
 }
 
-// Khởi chạy hiển thị toàn bộ kho phim khi mở trang lần đầu
-loadMovies(KHO_PHIM);
+// Khởi chạy lấy danh mục phim phổ biến đầu tiên
+fetchMovies(currentType);
 </script>
 
 </body>
